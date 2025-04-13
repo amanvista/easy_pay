@@ -1,0 +1,271 @@
+/* payment.css */
+.payment-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+    padding: 0;
+  }
+  
+  .payment-left, .payment-right {
+    padding: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .payment-left {
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .payment-right {
+    background: #ffffff;
+  }
+  
+  .qr-instructions {
+    background: #ffffff;
+    padding: 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  
+  .qr-instructions p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+  }
+  
+  .qr-code-wrapper {
+    text-align: center;
+    margin: 1.5rem 0;
+  }
+  
+  .qr-code-image {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    border: 1px solid #e0e0e0;
+    padding: 0.8rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .upi-id {
+    font-weight: bold;
+    margin-top: 0.8rem;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .order-summary {
+    background: white;
+    padding: 1.2rem;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  
+  .order-summary h3 {
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+  }
+  
+  .order-summary ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.8rem 0;
+  }
+  
+  .order-summary li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    font-size: 0.9rem;
+    border-bottom: 1px dashed #eee;
+  }
+  
+  .order-total {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 0.8rem;
+    padding-top: 0.5rem;
+    border-top: 2px solid #eee;
+  }
+  
+  .upload-section {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    padding: 1.2rem;
+    margin: 1rem 0;
+    background: #f8f9fa;
+  }
+  
+  .upload-instructions {
+    text-align: center;
+  }
+  
+  .upload-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .upload-btn {
+    display: inline-block;
+    padding: 0.7rem 1.2rem;
+    background: #4CAF50;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    position: relative;
+  }
+  
+  .upload-btn:hover {
+    background: #45a049;
+  }
+  
+  .file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+  
+  .screenshot-preview {
+    text-align: center;
+    width: 100%;
+  }
+  
+  .screenshot-preview img {
+    max-width: 100%;
+    max-height: 250px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  
+  .submit-btn {
+    padding: 0.7rem 1.5rem;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    transition: all 0.2s;
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .submit-btn:hover {
+    background: #0b7dda;
+  }
+  
+  .verification-status {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .spinner {
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 3px solid #3498db;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 0.8rem;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .help-section {
+    margin-top: 1.5rem;
+    padding: 1.2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+  
+  .help-section h3 {
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
+    color: #333;
+  }
+  
+  .help-section ul {
+    padding-left: 1.2rem;
+    margin: 0;
+  }
+  
+  .help-section li {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  /* Desktop styles */
+  @media (min-width: 768px) {
+    .payment-container {
+      flex-direction: row;
+      padding: 0;
+    }
+  
+    .payment-left, .payment-right {
+      height: 100vh;
+      overflow-y: auto;
+      padding: 2rem;
+    }
+  
+    .payment-left {
+      border-right: 1px solid #e0e0e0;
+      border-bottom: none;
+      flex: 0 0 45%;
+    }
+  
+    .payment-right {
+      flex: 1;
+    }
+  
+    .qr-code-image {
+      width: 220px;
+      height: 220px;
+    }
+  
+    .upload-section {
+      min-height: 300px;
+    }
+  
+    .submit-btn {
+      max-width: none;
+      width: auto;
+    }
+  }
+  
+  /* Large desktop styles */
+  @media (min-width: 1200px) {
+    .payment-left {
+      flex: 0 0 40%;
+    }
+  }
