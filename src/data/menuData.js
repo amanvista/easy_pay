@@ -17,7 +17,7 @@ export const menuData = {
             description: "Crispy fried squid served with marinara sauce",
             price: 100,
             image: "https://images.unsplash.com/photo-1562967914-608f82629710?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-            available: false
+            available: true
           },
           {
             id: 3,

@@ -8,7 +8,8 @@ import { Provider } from 'react-redux';
 import { store } from './app/store';
 import PaymentPage from './pages/PaymentPage/PaymentPage';
 import OrderStatusPage from './pages/OrderStatusPage/OrderStatusPage';
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const App = () => {
   const [currentTheme, setCurrentTheme] = useState(restaurantConfig.defaultTheme);
 
@@ -24,6 +25,7 @@ const App = () => {
         </Routes>
       </div>
     </Router>
+    <ToastContainer />
     </Provider>
   );
 };

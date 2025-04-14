@@ -1,6 +1,31 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { addItem } from '../../app/slices/cartSlice';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const MenuItem = ({ item, addToCart }) => {
+const MenuItem = ({ item }) => {
+    const dispatch = useDispatch();
+
+    const handleAddToCart = () => {
+        dispatch(addItem({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: 1 // Default quantity when adding to cart
+        }));
+         // Show toast notification
+         toast.success(`${item.name} added to cart!`, {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+    };
+
   return (
     <div className="menu-item">
       <img 
@@ -17,7 +42,7 @@ const MenuItem = ({ item, addToCart }) => {
         <div className="item-price">₹ {item.price}</div>
         <div className="item-footer">
           {item.available ? (
-            <button className="order-btn" onClick={() => addToCart(item.id)}>
+            <button className="order-btn" onClick={handleAddToCart}>
               Add to Order
             </button>
           ) : (

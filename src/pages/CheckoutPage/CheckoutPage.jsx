@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./checkout.css"
 import Header from '../../components/Header/Header';
-const CheckoutPage = ({ cart, total }) => {
+import { useSelector } from 'react-redux';
+import { selectCartItems, selectCartTotal } from '../../app/slices/cartSlice';
+const CheckoutPage = ({   }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
@@ -13,6 +15,8 @@ const CheckoutPage = ({ cart, total }) => {
   });
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const [orderNumber, setOrderNumber] = useState(null);
+  const cart = useSelector(selectCartItems);
+  const total = useSelector(selectCartTotal);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -49,11 +53,11 @@ const CheckoutPage = ({ cart, total }) => {
             <ul>
               {cart?.map(item => (
                 <li key={`${item.id}-${Math.random()}`}>
-                  {item.name} - ${item.price.toFixed(2)} x {item.quantity}
+                  {item.name} - ₹ {item.price} x {item.quantity}
                 </li>
               ))}
             </ul>
-            <p className="order-total">Total: ${total.toFixed(2)}</p>
+            <p className="order-total">Total: ₹ {total}</p>
           </div>
           <p>You'll be redirected to the home page shortly...</p>
         </div>
@@ -69,13 +73,13 @@ const CheckoutPage = ({ cart, total }) => {
         <div className="order-summary">
           <h3>Your Order</h3>
           <ul>
-            {/* {cart.map(item => (
+            {cart.map(item => (
               <li key={`${item.id}-${Math.random()}`}>
-                {item.name} - ${item.price.toFixed(2)} x {item.quantity}
+                {item.name} - ₹ {item.price} x {item.quantity}
               </li>
-            ))} */}
+            ))}
           </ul>
-          {/* <p className="order-total">Total: ${total.toFixed(2)}</p> */}
+          <p className="order-total">Total: ₹ {total}</p>
         </div>
 
         <form className="checkout-form" onSubmit={handleSubmit}>
@@ -114,7 +118,7 @@ const CheckoutPage = ({ cart, total }) => {
             />
           </div>
           <button type="submit" className="submit-order-btn">
-            Place Order
+            Proceed to Payment
           </button>
         </form>
       </div>
