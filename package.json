@@ -1,4 +1,5 @@
 {
+  "homepage": ".",
   "name": "easy_pay",
   "private": true,
   "version": "0.0.0",
@@ -11,6 +12,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.6.1",
+    "axios": "^1.8.4",
     "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

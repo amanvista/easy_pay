@@ -1,7 +1,7 @@
 export const menuData = {
     categories: [
       {
-        name: "Starters",
+        name: "Chicken Shwarma",
         items: [
           {
             id: 1,
@@ -30,32 +30,32 @@ export const menuData = {
         ]
       },
       {
-        name: "Main Courses",
+        name: "Beef Shawarma",
         items: [
-          {
-            id: 4,
-            name: "Spaghetti Carbonara",
-            description: "Classic pasta with eggs, cheese, pancetta, and black pepper",
-            price: 14.99,
-            image: "https://images.unsplash.com/photo-1588013273468-315fd88ea34c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-            available: true
-          },
-          {
-            id: 5,
-            name: "Grilled Salmon",
-            description: "Fresh salmon fillet with lemon butter sauce and vegetables",
-            price: 18.99,
-            image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-            available: true
-          },
-          {
-            id: 6,
-            name: "Beef Tenderloin",
-            description: "8oz beef tenderloin with red wine reduction and mashed potatoes",
-            price: 24.99,
-            image: "https://images.unsplash.com/photo-1588168333986-5078d3ae3976?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-            available: true
-          }
+            {
+                id: 4,
+                name: "Nalli Shawarma",
+                description: "Toasted bread topped with tomatoes",
+                price: 120,
+                image: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                available: true
+              },
+              {
+                id: 5,
+                name: "Turkish Shawarma",
+                description: "Crispy fried squid served with marinara sauce",
+                price: 100,
+                image: "https://images.unsplash.com/photo-1562967914-608f82629710?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                available: true
+              },
+              {
+                id: 6,
+                name: "Lebanese Shawarma",
+                description: "Mushroom caps filled with herbed cream cheese",
+                price: 70,
+                image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                available: true
+              }
         ]
       },
       {

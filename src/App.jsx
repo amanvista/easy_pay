@@ -10,6 +10,9 @@ import PaymentPage from './pages/PaymentPage/PaymentPage';
 import OrderStatusPage from './pages/OrderStatusPage/OrderStatusPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import HomePage from './pages/HomePage/HomePage';
+import Login from './pages/LoginPage/Login';
+import Register from './pages/RegisterPage/Register';
 const App = () => {
   const [currentTheme, setCurrentTheme] = useState(restaurantConfig.defaultTheme);
 
@@ -18,10 +21,13 @@ const App = () => {
     <Router>
       <div className="App" data-theme={currentTheme}>
         <Routes>
-          <Route path="/" element={<MenuPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/order" element={<OrderStatusPage />} />
+          <Route path="/menu" element={<MenuPage />} />
         </Routes>
       </div>
     </Router>

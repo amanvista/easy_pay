@@ -1,0 +1,24 @@
+.quantity-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100px;
+}
+
+.quantity-control button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    background: white;
+}
+
+.quantity-control button:hover {
+    background: #f0f0f0;
+}
+
+.quantity-control span {
+    margin: 0 10px;
+    min-width: 20px;
+    text-align: center;
+}
