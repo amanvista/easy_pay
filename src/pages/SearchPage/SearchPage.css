@@ -1,0 +1,113 @@
+.search-page {
+    background-color: #f9fafb;
+    min-height: 100vh;
+  }
+  
+  /* Main Content Styles */
+  .main-content {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+  }
+  
+  .search-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Tabs Styles */
+  .tabs-container {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 1.5rem;
+  }
+  
+  .tab-button {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    color: #6b7280;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .active-tab {
+    color: #ea580c;
+    border-bottom-color: #ea580c;
+  }
+  
+  /* Results Grid */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .results-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .results-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  /* No Results Styles */
+  .no-results {
+    text-align: center;
+    padding: 3rem 0;
+  }
+  
+  .no-results-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #4b5563;
+  }
+  
+  .no-results-message {
+    color: #6b7280;
+    margin-top: 0.5rem;
+  }
+  
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .pagination-controls button {
+    background-color: #fc8019; /* Swiggy Orange */
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .pagination-controls button:disabled {
+    background-color: #ffd7b5;
+    cursor: not-allowed;
+    color: #fff3ea;
+  }
+  
+  .pagination-controls button:hover:not(:disabled) {
+    background-color: #e96b00;
+    transform: translateY(-2px);
+  }
+  
+  .pagination-controls span {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+  }
+  

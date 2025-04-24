@@ -13,6 +13,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import HomePage from './pages/HomePage/HomePage';
 import Login from './pages/LoginPage/Login';
 import Register from './pages/RegisterPage/Register';
+import SearchPage from './pages/SearchPage/SearchPage';
+import Bill from './pages/Bill/Bill';
+import RestaurantPage from './pages/RestaurantPage/RestaurantPage';
+import ViewCart from './pages/ViewCart/ViewCart';
 const App = () => {
   const [currentTheme, setCurrentTheme] = useState(restaurantConfig.defaultTheme);
 
@@ -28,6 +32,10 @@ const App = () => {
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/order" element={<OrderStatusPage />} />
           <Route path="/menu" element={<MenuPage />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/bill" element={<Bill />} />
+          <Route path="/restaurant" element={<RestaurantPage />} />
+          <Route path="/cart" element={<ViewCart />} />
         </Routes>
       </div>
     </Router>

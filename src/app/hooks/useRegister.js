@@ -1,37 +1,52 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { useCallback } from 'react';
-import {
-  registerUser,
-  clearRegisterError,
-  resetRegisterState
-} from '../slices/registerSlice';
+import { useState } from 'react';
+import axios from 'axios';
+const API_URL = 'http://localhost/easy_pay_backend/api/register';
 
 export const useRegister = () => {
-  const dispatch = useDispatch();
-  const registerState = useSelector((state) => state.register);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  // Wrapper for registration API call
-  const register = useCallback(async ({ name, phone, email, password }) => {
+  const register = async ({ name, phone, email, password }) => {
+    setIsLoading(true);
+    setError(null);
+    setIsSuccess(false);
+    
     try {
-      await dispatch(registerUser({ name, phone, email, password })).unwrap();
-      return { success: true };
-    } catch (error) {
-      return { success: false, error };
+      const response = await axios.post(API_URL, {
+        name,
+        phone,
+        email,
+        password
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      setIsSuccess(true);
+      return { success: true, data: response.data };
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || err.message || 'Registration failed';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setIsLoading(false);
     }
-  }, [dispatch]);
+  };
 
-  // Clear registration-specific errors
-  const resetError = useCallback(() => {
-    dispatch(clearRegisterError());
-  }, [dispatch]);
-
-  // Reset full registration state (useful after form submission)
-  const resetState = useCallback(() => {
-    dispatch(resetRegisterState());
-  }, [dispatch]);
+  const resetError = () => setError(null);
+  
+  const resetState = () => {
+    setIsLoading(false);
+    setError(null);
+    setIsSuccess(false);
+  };
 
   return {
-    ...registerState,
+    isLoading,
+    error,
+    isSuccess,
     register,
     resetError,
     resetState,

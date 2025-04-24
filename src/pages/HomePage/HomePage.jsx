@@ -1,79 +1,98 @@
-import { Link } from 'react-router-dom';
-import './HomePage.css';
+import React from "react";
+import "./HomePage.css";
+import Header from "../SearchPage/Header";
+
+// Direct Unsplash image URLs (permanent links)
+const heroImage = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80";
+const stepImages = [
+  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+  "https://images.unsplash.com/photo-1550565118-3a14e8d0386f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+  "https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+];
+
+const featuredRestaurants = [
+  {
+    name: "Spicy Hub",
+    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    cuisine: "North Indian • Tandoori Specials"
+  },
+  {
+    name: "Tandoori Treats",
+    image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    cuisine: "Mughlai • Kebabs"
+  },
+  {
+    name: "Curry Corner",
+    image: "https://images.unsplash.com/photo-1585032226651-759b368d7246?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    cuisine: "South Indian • Seafood"
+  }
+];
 
 const HomePage = () => {
   return (
-    <div className="home-page">
+    <>
+    <Header/>
+    <div className="homepage-blinkfeast">
+      
       {/* Hero Section */}
-      <section className="hero-section">
-        <div className="container hero-content">
-          <h1>Order Food, Skip the Queue</h1>
-          <p>With Garbji, order online, pay online, and pick up your food when it's ready - no waiting!</p>
-          <div className="hero-buttons">
-            <Link to="/restaurants" className="btn btn-primary">Order Now</Link>
-            <Link to="/register" className="btn btn-outline">Sign Up</Link>
-          </div>
+      <section className="homepage-blinkfeast__hero">
+        <div className="homepage-blinkfeast__hero-image">
+          <img 
+            src={heroImage} 
+            alt="Happy woman enjoying delicious food at a restaurant"
+          />
+        </div>
+        <div className="homepage-blinkfeast__hero-content">
+          <h1>Skip the line, savor the flavor</h1>
+          <p>Order ahead from your favorite local restaurants</p>
+          <button className="homepage-blinkfeast__cta">Get Started</button>
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="how-it-works">
-        <div className="container">
-          <div className="section-title">
-            <h2>How Garbji Works</h2>
-            <p>We provide the best food delivery experience with our fast service and wide selection of restaurants</p>
-          </div>
-          
-          <div className="grid grid-cols-3">
-            <div className="feature-card">
-              <div className="feature-icon">1</div>
-              <h3>Browse & Order</h3>
-              <p>Choose from local restaurants and place your order online.</p>
+     
+
+      {/* How It Works Section */}
+      <section className="homepage-blinkfeast__how-it-works">
+        <h2>How It Works</h2>
+        <div className="homepage-blinkfeast__steps">
+          {stepImages.map((image, index) => (
+            <div key={index} className="homepage-blinkfeast__card">
+              <img src={image} alt={`Step ${index + 1}`} />
+              <h3>{[
+                "Browse & Order", 
+                "Pay Securely", 
+                "Pick Up & Enjoy"
+              ][index]}</h3>
+              <p>{[
+                "Choose from local restaurants and place your order online.",
+                "Complete your payment with our secure payment system.",
+                "Get notified when your order is ready - no waiting!"
+              ][index]}</p>
             </div>
-            
-            <div className="feature-card">
-              <div className="feature-icon">2</div>
-              <h3>Pay Securely</h3>
-              <p>Complete your payment online with our secure payment system.</p>
-            </div>
-            
-            <div className="feature-card">
-              <div className="feature-icon">3</div>
-              <h3>Pick Up & Enjoy</h3>
-              <p>Get notified when your order is ready for pickup - no waiting in line!</p>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* Featured Restaurants */}
-      <section className="featured-restaurants">
-        <div className="container">
-          <div className="section-title">
-            <h2>Featured Restaurants</h2>
-          </div>
-          
-          <div className="grid grid-cols-3">
-            <div className="restaurant-card">
-              <img 
-                src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
-                alt="Restaurant" 
-              />
-              <div className="restaurant-info">
-                <h3>Urban Bites</h3>
-                <p className="cuisine-type">Italian • American • $$</p>
-                <Link to="/menu/1" className="view-menu">View Menu</Link>
-              </div>
+      <section className="homepage-blinkfeast__featured">
+        <h2>Featured Restaurants</h2>
+        <div className="homepage-blinkfeast__restaurants">
+          {featuredRestaurants.map((restaurant, index) => (
+            <div key={index} className="homepage-blinkfeast__restaurant-card">
+              <img src={restaurant.image} alt={restaurant.name} />
+              <h3>{restaurant.name}</h3>
+              <p>{restaurant.cuisine}</p>
             </div>
-            {/* Add more restaurant cards */}
-          </div>
-          
-          <div className="view-all">
-            <Link to="/restaurants" className="btn btn-outline">View All Restaurants</Link>
-          </div>
+          ))}
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="homepage-blinkfeast__footer">
+        <div className="homepage-blinkfeast__footer-logo">blinkfeast</div>
+      </footer>
     </div>
+    </>
   );
 };
 

@@ -1,0 +1,111 @@
+/* Card Container */
+.restaurant-card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s;
+  }
+  
+  .restaurant-card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transform: scale(1.02);
+  }
+  
+  /* Restaurant Image */
+  .card-image {
+    width: 100%;
+    height: 12rem;
+    object-fit: cover;
+  }
+  
+  /* Content Inside the Card */
+  .card-content {
+    padding: 1rem;
+  }
+  
+  /* Header Row (Title + Rating) */
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  
+  .card-title {
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin: 0;
+  }
+  
+  /* Cuisine and Location */
+  .card-subtitle {
+    color: #4b5563;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+  
+  /* Rating Badge */
+  .rating-badge {
+    display: flex;
+    align-items: center;
+    background-color: #f0fdf4;
+    color: #166534;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+  }
+  
+  .star-icon {
+    color: #eab308;
+    margin-right: 0.25rem;
+  }
+  
+  /* Delivery Time & Minimum Order */
+  .card-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+  
+  /* Order Now Button */
+  .order-button {
+    background-color: #ff5722;
+    color: #fff;
+    border: none;
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .preorder-tag {
+    background-color: #ffcc00;
+    color: #333;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  .popular-dishes {
+    font-size: 0.85rem;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  
+  .order-button:hover {
+    background-color: #c2410c;
+  }
+  .opens-at {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: #555;
+    text-align: left;
+    font-style: italic;
+  }
