@@ -44,7 +44,7 @@ const restaurantApi = {
   getMenu: async (restaurantId) => {
     try {
       const response = await apiClient.get(`/restaurants/menu?id=${restaurantId}`);
-      return response.data.data;
+      return response.data.categories;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch menu items');
     }

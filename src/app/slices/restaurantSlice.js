@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   restaurantId:0,
-  menuItems: [],            // all menu items of the current restaurant
+  menuItems: {},            // all menu items of the current restaurant
   loading: false,
   menuItemLoading:false,
   restaurantError: false,

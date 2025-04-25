@@ -33,7 +33,7 @@ const MenuPage = () => {
     fetchRestaurantMenuItems(id)
   },[id])
 
-
+console.log(menuItems)
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   return (
     <div>
@@ -46,11 +46,12 @@ const MenuPage = () => {
       <div className="container">
         {!menuItemsLoading && menuError && <>Error loading Menu Items</>}
         {menuItemsLoading && <LoadingSpinner size="medium" color="#3498db" />}
-        {!menuError && !menuItemsLoading && menuItems?.categories?.map(category => (
-          <MenuCategory
-            key={category.name}
-            category={category}
-          />
+        {!menuError && !menuItemsLoading && 
+          Object.entries(menuItems || {}).map(([categoryName, items]) => (
+            <MenuCategory
+              key={categoryName}
+              category={{ name: categoryName, items }}
+            />
         ))}
       </div>
       <CartIcon itemCount={totalItems} toggleCart={toggleCart} />
