@@ -1,6 +1,7 @@
 import React from 'react';
-import { GiFlatStar } from 'react-icons/gi';
 import './RestaurantCard.css';
+import Star from '../icons/Star/Star';
+import { useNavigate } from 'react-router-dom';
 
 const RestaurantCard = ({ restaurant, onOrder }) => {
   const {
@@ -14,7 +15,10 @@ const RestaurantCard = ({ restaurant, onOrder }) => {
     discount,
   } = restaurant;
   const imageUrl = `http://localhost/images/food/${main_image_url}`
-
+  const navigate = useNavigate();
+  const onClickPreorder = ()=>{
+    navigate(`/menu?id=${restaurant.id}`)
+  }
   return (
     <div className="restaurant-card">
       <div className="card-image-container">
@@ -37,10 +41,10 @@ const RestaurantCard = ({ restaurant, onOrder }) => {
 
         <div className="card-header">
           <h3 className="card-title">{name}</h3>
-          <span className="rating-badge">
-            <GiFlatStar className="star-icon" />
-            {avg_rating ? avg_rating.toFixed(1) : 'N/A'}
-          </span>
+          <span class="rating-badge">
+  {avg_rating ? avg_rating.toFixed(1) : '4.1'}
+      <Star/>
+    </span>
         </div>
 
         <div className="card-subtitle">
@@ -51,12 +55,12 @@ const RestaurantCard = ({ restaurant, onOrder }) => {
           <strong>Top Dishes:</strong> {top_dishes?.split(',').slice(0, 2).join(', ') || 'N/A'}
         </div>
 
-        <button className="order-button" onClick={onOrder}>
+        <button className="order-button" onClick={onClickPreorder}>
           Pre-Order Now & Skip the Wait!
         </button>
 
         <div className="opens-at">
-          <span>Opens at: <strong>{opening_time || 'N/A'}</strong></span>
+          <span>Opens at: <strong>{opening_time?.split(':').slice(0, 2).join(':') || 'N/A'}</strong></span>
         </div>
       </div>
     </div>

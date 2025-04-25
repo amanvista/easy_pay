@@ -1,0 +1,27 @@
+.loading-spinner {
+    display: inline-block;
+    text-align: center;
+  }
+  
+  .loading-spinner.full-page {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+  }
+  
+  .loading-spinner.small svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  .loading-spinner.medium svg {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .loading-spinner.large svg {
+    width: 5rem;
+    height: 5rem;
+  }

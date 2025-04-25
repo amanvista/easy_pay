@@ -46,18 +46,22 @@
   
   /* Rating Badge */
   .rating-badge {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    background-color: #f0fdf4;
-    color: #166534;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
+    gap: 4px;
+    background-color: #267e3e;
+    color: white;
+    padding: 4px 7px;
+    border-radius: 10px; /* Fully rounded */
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1;
   }
   
-  .star-icon {
-    color: #eab308;
-    margin-right: 0.25rem;
+  .rating-star {
+    width: 15px;
+    height: 15px;
+    fill: white;
   }
   
   /* Delivery Time & Minimum Order */
