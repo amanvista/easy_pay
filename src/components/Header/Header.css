@@ -146,3 +146,8 @@
       font-size: 1.25rem;
     }
   }
+  .logo-img {
+    width: 60px; /* Adjust width to make it smaller */
+    height: auto; /* Keep aspect ratio */
+    object-fit: contain; /* Ensure the image doesn't stretch */
+  }

@@ -1,0 +1,388 @@
+/* CheckoutPage.css */
+
+.checkout-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+  }
+  
+  .left-panel, .right-panel {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  .left-panel {
+    flex: 2;
+    min-width: 300px;
+  }
+  
+  .right-panel {
+    flex: 1.2;
+    min-width: 280px;
+  }
+  
+  .section {
+    margin-bottom: 2rem;
+  }
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .section-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  
+  .status.success {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .icon {
+    font-size: 1.2rem;
+  }
+  
+  .change-btn {
+    color: #ff5722;
+    border: none;
+    background: none;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 0.5rem;
+  }
+  
+  .pay-btn {
+    background-color: #4caf50;
+    color: white;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+  }
+  
+  .restaurant-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .restaurant-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 6px;
+  }
+  
+  .order-item {
+    margin-bottom: 1rem;
+  }
+  
+  .order-item .price {
+    font-weight: bold;
+    float: right;
+  }
+  
+  .old-price {
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+  
+  textarea {
+    width: 100%;
+    padding: 0.75rem;
+    margin: 1rem 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: vertical;
+  }
+  
+  .no-contact {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .no-contact small {
+    display: block;
+    font-size: 0.8rem;
+    color: #555;
+  }
+  
+  .apply-coupon {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px dashed #aaa;
+    background-color: #fafafa;
+    cursor: pointer;
+  }
+  
+  .bill-details {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 1rem;
+  }
+  
+  .bill-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  
+  .add-tip {
+    color: #ff5722;
+    cursor: pointer;
+  }
+  
+  .total-pay {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 1rem 0;
+  }
+  
+  .savings {
+    text-align: center;
+    padding: 0.75rem;
+    background-color: #e8f5e9;
+    color: green;
+    font-weight: bold;
+    border-radius: 8px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .checkout-container {
+      flex-direction: column;
+    }
+  }
+  .pickup-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+  
+  .pickup-select {
+    flex: 1;
+    min-width: 150px;
+  }
+  
+  .upload-section {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 24px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+  
+  .upload-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .upload-container {
+    border: 2px dashed #e2e8f0;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+  
+  .upload-container:hover {
+    border-color: #cbd5e0;
+  }
+  
+  .upload-box {
+    display: block;
+    padding: 32px 16px;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .upload-input {
+    display: none;
+  }
+  
+  .upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .upload-icon {
+    width: 48px;
+    height: 48px;
+    fill: #718096;
+    margin-bottom: 12px;
+  }
+  
+  .upload-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 4px;
+  }
+  
+  .upload-hint {
+    font-size: 0.875rem;
+    color: #718096;
+  }
+  
+  .preview-container {
+    padding: 16px;
+  }
+  
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 0.875rem;
+    color: #4a5568;
+  }
+  
+  .delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    color: #718096;
+    transition: all 0.2s ease;
+  }
+  
+  .delete-btn:hover {
+    background: #f8f9fa;
+    color: #e53e3e;
+  }
+  
+  .image-preview {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #edf2f7;
+  }
+  
+  .preview-image {
+    display: block;
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+  }
+  
+  .reupload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  .image-preview:hover .reupload-overlay {
+    opacity: 1;
+  }
+  
+  .reupload-btn {
+    background: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #2d3748;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .reupload-btn:hover {
+    background: #f7fafc;
+    transform: translateY(-1px);
+  }
+  
+  .confirm-upload-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px 16px;
+    margin-top: 16px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 5px rgba(79, 70, 229, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .confirm-upload-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+    box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+    transform: translateY(-1px);
+  }
+  
+  .confirm-upload-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 3px rgba(79, 70, 229, 0.2);
+  }
+  
+  .confirm-upload-btn:disabled {
+    background: #c7d2fe;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  
+  /* Loading spinner for when uploading */
+  .confirm-upload-btn:disabled::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin: -8px 0 0 -8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Icon styling (if you want to add an icon) */
+  .confirm-upload-btn .btn-icon {
+    margin-right: 8px;
+    width: 18px;
+    height: 18px;
+  }
+
+  

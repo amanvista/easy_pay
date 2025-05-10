@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import RestaurantCard from '../../components/RestaurantCard/RestaurantCard';
 import "./SearchPage.css";
-import Header from './Header';
+import Header from '../../components/Header/Header';
 import NotificationPlay from '../../components/NotificationPlay/NotificationPlay';
 import useRestaurants from '../../app/hooks/useRestaurants';
 

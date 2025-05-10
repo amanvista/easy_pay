@@ -17,7 +17,7 @@ const RestaurantCard = ({ restaurant, onOrder }) => {
   const imageUrl = `http://localhost/images/food/${main_image_url}`
   const navigate = useNavigate();
   const onClickPreorder = ()=>{
-    navigate(`/menu?id=${restaurant.id}`)
+    navigate(`/menu/${restaurant.slug}`)
   }
   return (
     <div className="restaurant-card">

@@ -2,7 +2,7 @@
 import React from 'react';
 import './RestaurantPage.css';
 import MenuItemCard from '../../components/MenuItemCard/MenuItemCard';
-import Header from '../SearchPage/Header';
+import Header from '../../components/Header/Header';
 
 const menuItems = [
     {

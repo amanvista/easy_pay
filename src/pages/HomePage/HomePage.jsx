@@ -1,6 +1,6 @@
 import React from "react";
 import "./HomePage.css";
-import Header from "../SearchPage/Header";
+import Header from "../../components/Header/Header";
 
 // Direct Unsplash image URLs (permanent links)
 const heroImage = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80";

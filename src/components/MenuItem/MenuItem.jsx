@@ -68,7 +68,7 @@ const MenuItem = ({ item }) => {
                 <div className="item-desc">{item.description}</div>
                 <div className="item-price">₹ {item.price}</div>
                 <div className="item-footer">
-                    {item.available ? (
+                    {item.is_available ? (
                         isInCart ? (
                             <div className="quantity-control">
                                 <button 

@@ -4,11 +4,12 @@ import MenuCategory from '../../components/MenuCategory/MenuCategory';
 import CartIcon from '../../components/CartIcon/CartIcon';
 import CartSummary from '../../components/CartSummary/CartSummary';
 import { menuData } from '../../data/menuData';
-import Header from '../SearchPage/Header';
-import RestaurantHeader from '../../components/Header/Header';
+import Header from '../../components/Header/Header';
+import RestaurantHeader from '../../components/Header/RestaurantHeader';
 import useRestaurant from '../../app/hooks/useRestaurant';
 import { useQuery } from '../../app/hooks/useQuery';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import { useParams } from 'react-router-dom';
 
 const MenuPage = () => {
   const [cart, setCart] = useState([]);
@@ -26,12 +27,12 @@ const MenuPage = () => {
     fetchRestaurantDetails,
     fetchRestaurantMenuItems
   } = useRestaurant();
-  const {id} = useQuery('id');
+  const { slug } = useParams();
   useEffect(()=>{
-    if(id)
-    fetchRestaurantDetails(id)
-    fetchRestaurantMenuItems(id)
-  },[id])
+    if(slug)
+    fetchRestaurantDetails(slug)
+    fetchRestaurantMenuItems(slug)
+  },[slug])
 
 console.log(menuItems)
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);

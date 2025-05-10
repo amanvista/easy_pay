@@ -13,6 +13,7 @@ import {
   selectMenuError,
   selectMenuItemsLoading,
   selectRestaurant,
+  clearRestaurant
 } from '../slices/restaurantSlice';
 
 export default function useRestaurant() {
@@ -48,6 +49,7 @@ export default function useRestaurant() {
       dispatch(setMenuItems(menuData));
     } catch (err) {
       dispatch(setMenuError(err.message || 'Failed to load menu items'));
+      dispatch(clearRestaurant());
     } finally {
       dispatch(setMenuItemsLoading(false));
     }
