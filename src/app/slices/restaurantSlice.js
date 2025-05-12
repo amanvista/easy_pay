@@ -1,13 +1,39 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-  restaurantId:0,
-  menuItems: {},            // all menu items of the current restaurant
+// Helper functions for localStorage
+const loadState = () => {
+  try {
+    const serializedState = localStorage.getItem('restaurantState');
+    if (serializedState === null) {
+      return undefined;
+    }
+    return JSON.parse(serializedState);
+  } catch (err) {
+    console.error("Could not load state from localStorage", err);
+    return undefined;
+  }
+};
+
+const saveState = (state) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem('restaurantState', serializedState);
+  } catch (err) {
+    console.error("Could not save state to localStorage", err);
+  }
+};
+
+// Load initial state from localStorage if available
+const persistedState = loadState();
+
+const initialState = persistedState || {
+  restaurantId: 0,
+  menuItems: {},
   loading: false,
-  menuItemLoading:false,
+  menuItemLoading: false,
   restaurantError: false,
   menuError: false,
-  restaurant:{}
+  restaurant: {}
 };
 
 const restaurantSlice = createSlice({
@@ -16,28 +42,38 @@ const restaurantSlice = createSlice({
   reducers: {
     setRestaurantId: (state, action) => {
       state.restaurantId = action.payload;
+      saveState(state);
     },
     setRestaurant: (state, action) => {
-        state.restaurant = action.payload;
-      },
+      state.restaurant = action.payload;
+      saveState(state);
+    },
     setMenuItems: (state, action) => {
       state.menuItems = action.payload;
+      saveState(state);
     },
     setLoading: (state, action) => {
       state.loading = action.payload;
+      saveState(state);
     },
     setRestaurantError: (state, action) => {
       state.restaurantError = action.payload;
+      saveState(state);
     },
     clearRestaurant: (state) => {
-      state.menuItems = [];
+      state.menuItems = {};
+      state.restaurant = {};
+      state.restaurantId = 0;
+      saveState(state);
     },
-    setMenuItemsLoading: (state) => {
-        state.menuItemLoading = false;
+    setMenuItemsLoading: (state, action) => {
+      state.menuItemLoading = action.payload;
+      saveState(state);
     },
-    setMenuError: (state) => {
-        state.menuError = false;
-      }
+    setMenuError: (state, action) => {
+      state.menuError = action.payload;
+      saveState(state);
+    }
   }
 });
 
@@ -47,7 +83,7 @@ export const {
   setLoading, 
   setRestaurantError,
   setMenuError,
-  clearRestaurant ,
+  clearRestaurant,
   setRestaurantId,
   setMenuItemsLoading
 } = restaurantSlice.actions;

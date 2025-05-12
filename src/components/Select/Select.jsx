@@ -13,7 +13,7 @@ const Select = ({ id = 'custom-select', value, options = [], placeholder = 'Sele
         <option value="">{placeholder}</option>
         {options.map(opt => (
           <option key={opt.id} value={opt.id}>
-            {opt.name}
+            {opt.name||opt.label}
           </option>
         ))}
       </select>
