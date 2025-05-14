@@ -5,6 +5,7 @@ import configReducer from './slices/configSlice';
 import loginReducer from './slices/authSlice';
 import restaurantReducer from './slices/restaurantSlice';
 import locationReducer from './slices/locationSlice';
+import orderReducer from './slices/orderSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     auth: loginReducer,
     restaurant: restaurantReducer,
     location: locationReducer,
+    order:orderReducer
   }
   ,
   middleware: (getDefaultMiddleware) =>

@@ -4,11 +4,13 @@ import { addItem, removeItem } from '../../app/slices/cartSlice';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "./menuitem.css"
+import useRestaurant from '../../app/hooks/useRestaurant';
 const MenuItem = ({ item }) => {
     const dispatch = useDispatch();
     const cartItems = useSelector(state => state.cart.items);
     const [isInCart, setIsInCart] = useState(false);
     const [quantity, setQuantity] = useState(1);
+    const {restaurant} = useRestaurant();
 
     // Check if item is already in cart when component mounts or cartItems change
     useEffect(() => {
@@ -27,7 +29,8 @@ const MenuItem = ({ item }) => {
             id: item.id,
             name: item.name,
             price: item.price,
-            quantity: 1
+            quantity: 1,
+            restaurant:restaurant
         }));
         toast.success(`${item.name} added to cart!`, {
             position: "bottom-center",
@@ -45,7 +48,8 @@ const MenuItem = ({ item }) => {
             id: item.id,
             name: item.name,
             price: item.price,
-            quantity: 1
+            quantity: 1,
+            restaurant:restaurant
         }));
     };
 
