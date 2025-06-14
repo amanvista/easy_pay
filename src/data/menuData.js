@@ -1,91 +1,147 @@
 export const menuData = {
-    categories: [
+  categories: {
+    Beverages: [
       {
-        name: "Chicken Shwarma",
-        items: [
-          {
-            id: 1,
-            name: "Nalli Shawarma",
-            description: "Toasted bread topped with tomatoes",
-            price: 120,
-            image: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-            available: true
-          },
-          {
-            id: 2,
-            name: "Turkish Shawarma",
-            description: "Crispy fried squid served with marinara sauce",
-            price: 100,
-            image: "https://images.unsplash.com/photo-1562967914-608f82629710?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-            available: true
-          },
-          {
-            id: 3,
-            name: "Lebanese Shawarma",
-            description: "Mushroom caps filled with herbed cream cheese",
-            price: 70,
-            image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-            available: true
-          }
-        ]
+        id: 12,
+        name: "Mango Lassi",
+        description: "Sweet yogurt drink with mango",
+        price: "90.00",
+        is_vegetarian: true,
+        is_available: true,
+        preparation_time: 5,
+        featured_image_url:
+          "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_300,h_300,c_fit/FOOD_CATALOG/IMAGES/CMS/2025/3/11/c5476d2f-b09f-4c53-80b5-60cbdaf60a3b_80ff5967-9cf2-44fc-89a6-9c9350b1d736.jpg",
       },
       {
-        name: "Beef Shawarma",
-        items: [
-            {
-                id: 4,
-                name: "Nalli Shawarma",
-                description: "Toasted bread topped with tomatoes",
-                price: 120,
-                image: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-                available: true
-              },
-              {
-                id: 5,
-                name: "Turkish Shawarma",
-                description: "Crispy fried squid served with marinara sauce",
-                price: 100,
-                image: "https://images.unsplash.com/photo-1562967914-608f82629710?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-                available: true
-              },
-              {
-                id: 6,
-                name: "Lebanese Shawarma",
-                description: "Mushroom caps filled with herbed cream cheese",
-                price: 70,
-                image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-                available: true
-              }
-        ]
+        id: 13,
+        name: "Masala Chai",
+        description: "Spiced Indian tea",
+        price: "50.00",
+        is_vegetarian: true,
+        is_available: true,
+        preparation_time: 5,
+        featured_image_url:
+          "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_300,h_300,c_fit/FOOD_CATALOG/IMAGES/CMS/2024/10/17/64261820-53d1-4c02-83b7-3695fb145d8f_0878efe9-eb9a-4414-a5b8-869668e1ed3f.jpg",
+      },
+    ],
+    Breads: [
+      {
+        id: 7,
+        name: "Butter Naan",
+        description: "Soft leavened bread with butter",
+        price: "50.00",
+        is_vegetarian: true,
+        is_available: true,
+        preparation_time: 10,
+        featured_image_url:
+          "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_300,h_300,c_fit/FOOD_CATALOG/IMAGES/CMS/2024/10/17/d8ed092e-1e47-413c-927e-b332ef507097_ed5ffcac-15b7-4ab8-8ba7-51317eefe42c.jpg",
       },
       {
-        name: "Desserts",
-        items: [
-          {
-            id: 7,
-            name: "Tiramisu",
-            description: "Classic Italian dessert with coffee-soaked ladyfingers",
-            price: 7.99,
-            image: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-            available: true
-          },
-          {
-            id: 8,
-            name: "Chocolate Lava Cake",
-            description: "Warm chocolate cake with a molten center, served with vanilla ice cream",
-            price: 8.99,
-            image: "https://images.unsplash.com/photo-1564355808539-22fda35bed7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-            available: false
-          },
-          {
-            id: 9,
-            name: "Crème Brûlée",
-            description: "Rich custard topped with a layer of caramelized sugar",
-            price: 7.49,
-            image: "https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-            available: true
-          }
-        ]
-      }
-    ]
-  };
+        id: 8,
+        name: "Garlic Naan",
+        description: "Naan flavored with garlic and coriander",
+        price: "60.00",
+        is_vegetarian: true,
+        is_available: true,
+        preparation_time: 10,
+        featured_image_url: "https://example.com/images/garlicnaan.jpg",
+      },
+      {
+        id: 9,
+        name: "Roti",
+        description: "Whole wheat flatbread",
+        price: "30.00",
+        is_vegetarian: true,
+        is_available: true,
+        preparation_time: 8,
+        featured_image_url: "https://example.com/images/roti.jpg",
+      },
+    ],
+    Desserts: [
+      {
+        id: 10,
+        name: "Gulab Jamun",
+        description: "Deep fried milk balls in sugar syrup",
+        price: "120.00",
+        is_vegetarian: true,
+        is_available: true,
+        preparation_time: 5,
+        featured_image_url: "https://example.com/images/gulabjamun.jpg",
+      },
+      {
+        id: 11,
+        name: "Kheer",
+        description: "Rice pudding with nuts and saffron",
+        price: "100.00",
+        is_vegetarian: true,
+        is_available: true,
+        preparation_time: 15,
+        featured_image_url: "https://example.com/images/kheer.jpg",
+      },
+    ],
+    "Main Course": [
+      {
+        id: 4,
+        name: "Butter Chicken",
+        description: "Chicken in a rich tomato and butter gravy",
+        price: "350.00",
+        is_vegetarian: false,
+        is_available: true,
+        preparation_time: 20,
+        featured_image_url: "https://example.com/images/butterchicken.jpg",
+      },
+      {
+        id: 6,
+        name: "Dal Makhani",
+        description: "Black lentils slow cooked with butter and cream",
+        price: "280.00",
+        is_vegetarian: true,
+        is_available: true,
+        preparation_time: 25,
+        featured_image_url: "https://example.com/images/dalmakhani.jpg",
+      },
+      {
+        id: 5,
+        name: "Paneer Butter Masala",
+        description: "Paneer in a creamy tomato gravy",
+        price: "320.00",
+        is_vegetarian: true,
+        is_available: true,
+        preparation_time: 18,
+        featured_image_url: "https://example.com/images/paneerbuttermasala.jpg",
+      },
+    ],
+    Starters: [
+      {
+        id: 2,
+        name: "Chicken Tikka",
+        description: "Succulent pieces of chicken marinated and grilled",
+        price: "300.00",
+        is_vegetarian: false,
+        is_available: true,
+        preparation_time: 15,
+        featured_image_url: "https://example.com/images/chickentikka.jpg",
+      },
+      {
+        id: 3,
+        name: "Hara Bhara Kabab",
+        description: "Spinach and potato patties with nuts",
+        price: "220.00",
+        is_vegetarian: true,
+        is_available: true,
+        preparation_time: 12,
+        featured_image_url: "https://example.com/images/harabharakabab.jpg",
+      },
+      {
+        id: 1,
+        name: "Paneer Tikka",
+        description: "Cubes of paneer marinated in spices and grilled",
+        price: "250.00",
+        is_vegetarian: true,
+        is_available: true,
+        preparation_time: 15,
+        featured_image_url: "https://example.com/images/paneertikka.jpg",
+      },
+    ],
+  },
+};

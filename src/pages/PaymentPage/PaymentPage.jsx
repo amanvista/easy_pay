@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import paymentQR from '../../assets/payment-qr.png';
 import './payment.css';
 
 const PaymentPage = () => {
@@ -41,7 +40,7 @@ const PaymentPage = () => {
         </div>
         
         <div className="qr-code-wrapper">
-          <img src={paymentQR} alt="Payment QR Code" className="qr-code-image" />
+          <img src="./assets/payment-qr.png" alt="Payment QR Code" className="qr-code-image" />
           <p className="upi-id">UPI ID: yourrestaurant@upi</p>
         </div>
         

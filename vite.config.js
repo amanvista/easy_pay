@@ -1,20 +1,21 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import { resolve } from 'path'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import tailwindcss from "@tailwindcss/vite";
+import { resolve } from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  base: './', // This is crucial for proper asset loading
+  plugins: [react(), tailwindcss()],
+  base: "./", // This is crucial for proper asset loading
   build: {
-    outDir: 'dist',
+    outDir: "dist",
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html')
-      }
-    }
+        main: resolve(__dirname, "index.html"),
+      },
+    },
   },
   server: {
-    historyApiFallback: true
-  }
-})
+    historyApiFallback: true,
+  },
+});

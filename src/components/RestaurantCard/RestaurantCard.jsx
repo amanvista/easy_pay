@@ -1,67 +1,59 @@
-import React from 'react';
-import './RestaurantCard.css';
-import Star from '../icons/Star/Star';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { Star } from "lucide-react";
 
-const RestaurantCard = ({ restaurant, onOrder }) => {
-  const {
-    name,
-    main_image_url,
-    cuisine_type,
-    address,
-    avg_rating,
-    top_dishes,
-    opening_time,
-    discount,
-  } = restaurant;
-  const imageUrl = `http://localhost/images/food/${main_image_url}`
+const RestaurantCard = ({
+  id,
+  name,
+  main_image_url,
+  cuisine_type,
+  address,
+  avg_rating,
+  top_dishes,
+  opening_time,
+  closing_time,
+}) => {
   const navigate = useNavigate();
-  const onClickPreorder = ()=>{
-    navigate(`/menu?id=${restaurant.id}`)
-  }
+
   return (
-    <div className="restaurant-card">
-      <div className="card-image-container">
-        {/* Discount Badge (optional if your API supports this field in future) */}
-        {discount && (
-          <div className="discount-badge">
-            {discount}% OFF
+    <div
+      onClick={() => navigate(`/menu/${id}`)}
+      className="snap-start flex-shrink-0 w-64 bg-white/30 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg overflow-hidden hover:scale-105 transition-transform duration-300 transform cursor-pointer flex flex-col justify-between"
+    >
+      {/* Image */}
+      <img
+        src={main_image_url}
+        alt={`${name} image`}
+        className="h-40 w-full object-cover"
+      />
+
+      {/* Content */}
+      <div className="p-4 flex flex-col justify-between h-full space-y-2">
+        {/* Tag */}
+        <span className="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-2 py-0.5 rounded-full tracking-widest mb-1 w-fit">
+          {cuisine_type}
+        </span>
+
+        {/* Name & Rating */}
+        <div className="flex justify-between items-center">
+          <h4 className="font-semibold text-lg text-gray-900">{name}</h4>
+          <div className="flex items-center gap-1 text-sm text-green-800 font-medium">
+            <Star size={16} className="fill-green-700 text-green-800" />
+            {avg_rating?.toFixed(1)}
           </div>
-        )}
-
-        <img 
-          src={imageUrl} 
-          alt={name}
-          className="card-image"
-        />
-      </div>
-
-      <div className="card-content">
-        <div className="preorder-tag">Pre-Order Available</div>
-
-        <div className="card-header">
-          <h3 className="card-title">{name}</h3>
-          <span class="rating-badge">
-  {avg_rating ? avg_rating.toFixed(1) : '4.1'}
-      <Star/>
-    </span>
         </div>
 
-        <div className="card-subtitle">
-          {cuisine_type} • {address}
-        </div>
+        {/* Top Dishes */}
+        <p className="text-xs text-gray-700">
+          <span className="font-semibold">Top Dishes:</span> {top_dishes}
+        </p>
 
-        <div className="popular-dishes">
-          <strong>Top Dishes:</strong> {top_dishes?.split(',').slice(0, 2).join(', ') || 'N/A'}
-        </div>
+        {/* Address */}
+        <p className="text-xs text-gray-600 line-clamp-1">{address}</p>
 
-        <button className="order-button" onClick={onClickPreorder}>
-          Pre-Order Now & Skip the Wait!
-        </button>
-
-        <div className="opens-at">
-          <span>Opens at: <strong>{opening_time?.split(':').slice(0, 2).join(':') || 'N/A'}</strong></span>
-        </div>
+        {/* Timings at Bottom Left */}
+        <p className="text-xs text-gray-500 mt-2">
+          Timings: {opening_time?.slice(0, 5)} - {closing_time?.slice(0, 5)}
+        </p>
       </div>
     </div>
   );

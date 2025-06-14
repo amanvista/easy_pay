@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
-import bellSound from '../../assets/bell.mp3';
 
 const NotificationPlay = () => {
   const playSound = () => {
-    const audio = new Audio(bellSound); // Make sure 'ting.mp3' is in the public folder
+    const audio = new Audio("./assets/bell.mp3"); // Make sure 'ting.mp3' is in the public folder
     audio.play();
     document.removeEventListener('click', playSound); // Remove the event listener after the sound plays
   };

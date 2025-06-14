@@ -1,99 +1,74 @@
-import React from "react";
-import "./HomePage.css";
-import Header from "../SearchPage/Header";
+import { useState } from "react";
+import featureCards from "../../data/featureCards";
+import restaurants from "../../data/restaurantData";
+import FeatureCard from "../../components/FeatureCard/FeatureCard";
+import RestaurantCard from "../../components/RestaurantCard/RestaurantCard";
+import SearchBar from "../../components/SearchBar/SearchBar";
+import RestaurantGridCard from "../../components/ResaurantGridCard/RestaurantGridCard";
 
-// Direct Unsplash image URLs (permanent links)
-const heroImage = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80";
-const stepImages = [
-  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1550565118-3a14e8d0386f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-  "https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
-];
+const Home = () => {
+  const [location, setLocation] = useState("");
+  const [search, setSearch] = useState("");
+  const [region, setRegion] = useState("");
 
-const featuredRestaurants = [
-  {
-    name: "Spicy Hub",
-    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    cuisine: "North Indian • Tandoori Specials"
-  },
-  {
-    name: "Tandoori Treats",
-    image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    cuisine: "Mughlai • Kebabs"
-  },
-  {
-    name: "Curry Corner",
-    image: "https://images.unsplash.com/photo-1585032226651-759b368d7246?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    cuisine: "South Indian • Seafood"
-  }
-];
+  const filteredRestaurants = restaurants.data.restaurants.data.filter(
+    (res) =>
+      (location ? res.city === location : true) &&
+      (region ? res.region === region : true) &&
+      res.name.toLowerCase().includes(search.toLowerCase())
+  );
 
-const HomePage = () => {
   return (
-    <>
-    <Header/>
-    <div className="homepage-blinkfeast">
-      
-      {/* Hero Section */}
-      <section className="homepage-blinkfeast__hero">
-        <div className="homepage-blinkfeast__hero-image">
-          <img 
-            src={heroImage} 
-            alt="Happy woman enjoying delicious food at a restaurant"
-          />
-        </div>
-        <div className="homepage-blinkfeast__hero-content">
-          <h1>Skip the line, savor the flavor</h1>
-          <p>Order ahead from your favorite local restaurants</p>
-          <button className="homepage-blinkfeast__cta">Get Started</button>
-        </div>
-      </section>
+    <div className="bg-gradient-to-br from-white to-orange-50 min-h-screen text-black">
+      <div className="max-w-7xl mx-auto px-4 space-y-10 py-10">
+        {/* Search + Location */}
+        <SearchBar
+          location={location}
+          setLocation={setLocation}
+          region={region}
+          setRegion={setRegion}
+          search={search}
+          setSearch={setSearch}
+        />
 
-     
-
-      {/* How It Works Section */}
-      <section className="homepage-blinkfeast__how-it-works">
-        <h2>How It Works</h2>
-        <div className="homepage-blinkfeast__steps">
-          {stepImages.map((image, index) => (
-            <div key={index} className="homepage-blinkfeast__card">
-              <img src={image} alt={`Step ${index + 1}`} />
-              <h3>{[
-                "Browse & Order", 
-                "Pay Securely", 
-                "Pick Up & Enjoy"
-              ][index]}</h3>
-              <p>{[
-                "Choose from local restaurants and place your order online.",
-                "Complete your payment with our secure payment system.",
-                "Get notified when your order is ready - no waiting!"
-              ][index]}</p>
-            </div>
+        {/* Features */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {featureCards.map((card, index) => (
+            <FeatureCard
+              key={index}
+              title={card.title}
+              description={card.description}
+              Icon={card.icon}
+            />
           ))}
-        </div>
-      </section>
+        </section>
 
-      {/* Featured Restaurants */}
-      <section className="homepage-blinkfeast__featured">
-        <h2>Featured Restaurants</h2>
-        <div className="homepage-blinkfeast__restaurants">
-          {featuredRestaurants.map((restaurant, index) => (
-            <div key={index} className="homepage-blinkfeast__restaurant-card">
-              <img src={restaurant.image} alt={restaurant.name} />
-              <h3>{restaurant.name}</h3>
-              <p>{restaurant.cuisine}</p>
+        {/* Restaurant Carousel */}
+        <section className="overflow-hidden">
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-5 snap-x snap-mandatory overflow-x-auto scroll-smooth p-2">
+              {filteredRestaurants.map((res, index) => (
+                <RestaurantCard key={index} {...res} />
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* Footer */}
-      <footer className="homepage-blinkfeast__footer">
-        <div className="homepage-blinkfeast__footer-logo">blinkfeast</div>
-      </footer>
+        {/* Restaurant Grid View */}
+        <section>
+          <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+            Explore More Restaurants
+          </h3>
+
+          <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4 w-full">
+            {filteredRestaurants.map((res, index) => (
+              <RestaurantGridCard key={index} {...res} />
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
-    </>
   );
 };
 
-export default HomePage;
+export default Home;

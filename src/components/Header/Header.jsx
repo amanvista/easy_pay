@@ -1,70 +1,49 @@
-import React from 'react';
-import styles from './Header.module.css';
-import { FaPhoneAlt, FaMapMarkerAlt, FaStar, FaClock } from 'react-icons/fa';
-import useRestaurant from '../../app/hooks/useRestaurant';
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 
-const RestaurantHeader = ({restaurant, loading, error}) => {
-  if (loading) return <div className={styles.loading}>Loading restaurant details...</div>;
-  if (error) return <div className={styles.error}>Error: {error}</div>;
-  if (!restaurant) return <div className={styles.error}>Restaurant not found</div>;
+export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // Format opening hours
-  const openingHours = `${restaurant.opening_time} - ${restaurant.closing_time}`;
-  const image_url = `http://localhost/images/food/restaurant/${restaurant.logo_url}` || '/default-logo.jpg'
   return (
-    <header className={styles.orangeThemeHeader}>
-      <div className={styles.headerTop}>
-        <div className={styles.branding}>
-          <img 
-            src={image_url} 
-            alt={`${restaurant.name} Logo`} 
-            className={styles.logo} 
-          />
-          <div className={styles.brandText}>
-            <h1 className={styles.restaurantName}>{restaurant.name}</h1>
-            <p className={styles.cuisineType}>{restaurant.cuisine_type}</p>
-            <div className={styles.ratingContainer}>
-              <span className={styles.rating}>
-                <FaStar className={styles.starIcon} />
-                {restaurant.avg_rating}
-              </span>
-              <span className={styles.topDishes}>{restaurant.top_dishes}</span>
-            </div>
-          </div>
-        </div>
-        
-        <div className={styles.quickInfo}>
-          <div className={styles.infoItem}>
-            <FaClock className={styles.infoIcon} />
-            <div>
-              <p className={styles.infoLabel}>Opening Hours</p>
-              <p className={styles.infoValue}>{openingHours}</p>
-            </div>
-          </div>
-          <div className={styles.infoItem}>
-            <FaMapMarkerAlt className={styles.infoIcon} />
-            <div>
-              <p className={styles.infoLabel}>Location</p>
-              <p className={styles.infoValue}>{restaurant.address?.split(',')[1]?.trim() || restaurant.address}</p>
-            </div>
-          </div>
-        </div>
+    <header className="w-full sticky top-0 z-50 bg-white shadow-sm px-4 py-3 flex items-center justify-between md:px-8">
+      {/* Logo */}
+      <div className="flex items-center">
+  <img 
+    src="/assets/logo_2.png" 
+    alt="BlinkFeast Logo" 
+    className="h-10 w-30 object-contain" 
+  />
+</div>
+
+
+
+      {/* Desktop Nav */}
+      <nav className="hidden md:flex gap-6 text-sm font-medium items-center">
+        <a href="#">Bulk Order</a>
+        <a href="#">Partner with Us</a>
+        <a href="#">Sign In</a>
+      </nav>
+
+      {/* Mobile CTA + Menu */}
+      <div className="flex items-center md:hidden gap-4">
+        <a
+          href="#"
+          className="text-sm text-white bg-orange-500 px-3 py-1.5 rounded-lg font-medium shadow-sm"
+        >
+          Bulk Order
+        </a>
+        <button onClick={() => setMenuOpen(!menuOpen)}>
+          {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
       </div>
 
-      <div className={styles.headerBottom}>
-        <div className={styles.addressContainer}>
-          <FaMapMarkerAlt className={styles.addressIcon} />
-          <p className={styles.fullAddress}>{restaurant.address}</p>
+      {/* Mobile Dropdown */}
+      {menuOpen && (
+        <div className="absolute top-full left-0 w-full bg-white border-t px-4 py-3 flex flex-col gap-4 md:hidden">
+          <a href="#">Partner with Us</a>
+          <a href="#">Sign In</a>
         </div>
-        <div className={styles.contactContainer}>
-          <a href={`tel:${restaurant.contact_phone}`} className={styles.phoneLink}>
-            <FaPhoneAlt className={styles.phoneIcon} />
-            {restaurant.contact_phone}
-          </a>
-        </div>
-      </div>
+      )}
     </header>
   );
-};
-
-export default RestaurantHeader;
+}
