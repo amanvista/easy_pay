@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import paymentQR from '../../assets/payment-qr.png';
 import './payment.css';
+import useCart from '../../app/hooks/useCart';
 
 const PaymentPage = () => {
+  const {total, items} = useCart();
+  const cart = items;
   const navigate = useNavigate();
   const location = useLocation();
-  const { cart, total } = location.state || { cart: [], total: 0 };
+  // const { cart, total } = location.state || { cart: [], total: 0 };
   const [screenshot, setScreenshot] = useState(null);
   const [isUploaded, setIsUploaded] = useState(false);
 

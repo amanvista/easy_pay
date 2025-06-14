@@ -23,6 +23,7 @@ const useOrder = () => {
         console.error('Error creating order:', actionResult.payload);
         showToast('error', 'Error creating Order!');
       }
+      navigate("/payment");
     } catch (error) {
       console.error('Unexpected error:', error);
     }

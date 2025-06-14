@@ -37,7 +37,7 @@ const APISelect = ({ url, value, onChange, placeholder = "Select an option" }) =
       id="api-select"
       value={value||options?.[0]?.id}
       options={options}
-      placeholder="Select API"
+      placeholder={placeholder||"Select"}
       onChange={handleChange}
     />
   );
