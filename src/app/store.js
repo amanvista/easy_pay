@@ -4,6 +4,7 @@ import themeReducer from './slices/themeSlice';
 import configReducer from './slices/configSlice';
 import loginReducer from './slices/authSlice';
 import restaurantReducer from './slices/restaurantSlice';
+import topRestaurantsReducer from './slices/topRestaurantsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     config: configReducer,
     auth: loginReducer,
     restaurant: restaurantReducer,
+    topRestaurants:topRestaurantsReducer
   }
   ,
   middleware: (getDefaultMiddleware) =>

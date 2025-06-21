@@ -5,6 +5,7 @@ import FeatureCard from "../../components/FeatureCard/FeatureCard";
 import RestaurantCard from "../../components/RestaurantCard/RestaurantCard";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import RestaurantGridCard from "../../components/ResaurantGridCard/RestaurantGridCard";
+import TopRestaurants from "./TopRestaurants";
 
 const Home = () => {
   const [location, setLocation] = useState("");
@@ -44,15 +45,7 @@ const Home = () => {
         </section>
 
         {/* Restaurant Carousel */}
-        <section className="overflow-hidden">
-          <div className="overflow-x-auto scrollbar-hide">
-            <div className="flex gap-5 snap-x snap-mandatory overflow-x-auto scroll-smooth p-2">
-              {filteredRestaurants.map((res, index) => (
-                <RestaurantCard key={index} {...res} />
-              ))}
-            </div>
-          </div>
-        </section>
+        <TopRestaurants zoneId={4}/>
 
         {/* Restaurant Grid View */}
         <section>

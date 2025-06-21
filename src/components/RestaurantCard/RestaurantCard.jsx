@@ -21,7 +21,7 @@ const RestaurantCard = ({
     >
       {/* Image */}
       <img
-        src={main_image_url}
+        src={`http://localhost/images/food/restaurant/${main_image_url}`}
         alt={`${name} image`}
         className="h-40 w-full object-cover"
       />
@@ -38,7 +38,7 @@ const RestaurantCard = ({
           <h4 className="font-semibold text-lg text-gray-900">{name}</h4>
           <div className="flex items-center gap-1 text-sm text-green-800 font-medium">
             <Star size={16} className="fill-green-700 text-green-800" />
-            {avg_rating?.toFixed(1)}
+            {parseInt(avg_rating)?.toFixed(1)}
           </div>
         </div>
 
