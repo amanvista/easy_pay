@@ -6,6 +6,7 @@ import RestaurantCard from "../../components/RestaurantCard/RestaurantCard";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import RestaurantGridCard from "../../components/ResaurantGridCard/RestaurantGridCard";
 import TopRestaurants from "./TopRestaurants";
+import AllRestaurants from "./AllRestaurants";
 
 const Home = () => {
   const [location, setLocation] = useState("");
@@ -46,7 +47,7 @@ const Home = () => {
 
         {/* Restaurant Carousel */}
         <TopRestaurants zoneId={4}/>
-
+        <AllRestaurants/>
         {/* Restaurant Grid View */}
         <section>
           <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
