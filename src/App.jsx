@@ -5,6 +5,7 @@ import "./styles.css";
 import MenuPage from "./pages/MenuPage/MenuPage";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
+import CartPage from "./pages/CartPage/CartPage";
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Home />} />
             <Route path="/menu/:id" element={<MenuPage />} />
+            <Route path="/cart" element={<CartPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

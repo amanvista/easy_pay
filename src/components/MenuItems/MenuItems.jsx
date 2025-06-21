@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart, decrementItem } from "../../app/slices/cartSlice";
 import { useEffect, useRef } from "react";
 
-const MenuItems = ({ onRefsReady }) => {
+const MenuItems = ({ onRefsReady, restaurant }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
   const categoryRefs = useRef({});
@@ -92,7 +92,18 @@ const MenuItems = ({ onRefsReady }) => {
                               </button>
                               <span>{quantity}</span>
                               <button
-                                onClick={() => dispatch(addToCart(item))}
+                                onClick={() =>
+                                  dispatch(
+                                    addToCart({
+                                      ...item,
+                                      restaurant: {
+                                        id: restaurant.id,
+                                        name: restaurant.name,
+                                        address: restaurant.address,
+                                      },
+                                    })
+                                  )
+                                }
                                 className="hover:bg-orange-100 rounded-full px-2"
                               >
                                 +
@@ -100,7 +111,18 @@ const MenuItems = ({ onRefsReady }) => {
                             </div>
                           ) : (
                             <button
-                              onClick={() => dispatch(addToCart(item))}
+                              onClick={() =>
+                                dispatch(
+                                  addToCart({
+                                    ...item,
+                                    restaurant: {
+                                      id: restaurant.id,
+                                      name: restaurant.name,
+                                      address: restaurant.address,
+                                    },
+                                  })
+                                )
+                              }
                               className="w-full h-7 bg-orange-500 text-white text-xs font-semibold rounded-full shadow hover:bg-orange-600 transition-all"
                             >
                               Add +

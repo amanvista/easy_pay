@@ -60,7 +60,10 @@ const MenuPage = () => {
             {restaurant.name}
           </h2>
         </div>
-        <div className="relative">
+        <div
+          className="relative cursor-pointer"
+          onClick={() => navigate("/cart")}
+        >
           <ShoppingCart size={24} className="text-orange-500" />
           {cartCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -130,7 +133,7 @@ const MenuPage = () => {
       </div>
 
       {/* Menu Item */}
-      <MenuItems onRefsReady={handleCategoryRefs} />
+      <MenuItems onRefsReady={handleCategoryRefs} restaurant={restaurant} />
       {/* Floating Menu Button */}
       <button
         className="hidden md:block fixed bottom-24 right-5 z-40 bg-orange-500 text-white px-5 py-2 rounded-full shadow-xl hover:bg-orange-600 transition-all"
@@ -153,7 +156,10 @@ const MenuPage = () => {
           <p className="text-sm text-gray-800">
             {cartCount} item{cartCount > 1 ? "s" : ""} added
           </p>
-          <button className="bg-orange-500 text-white px-4 py-2 rounded-xl font-medium hover:bg-orange-600 transition-all">
+          <button
+            onClick={() => navigate("/cart")}
+            className="bg-orange-500 text-white px-4 py-2 rounded-xl cursor-pointer font-medium hover:bg-orange-600 transition-all"
+          >
             View Cart
           </button>
         </div>
