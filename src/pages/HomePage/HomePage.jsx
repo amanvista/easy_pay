@@ -2,9 +2,7 @@ import { useState } from "react";
 import featureCards from "../../data/featureCards";
 import restaurants from "../../data/restaurantData";
 import FeatureCard from "../../components/FeatureCard/FeatureCard";
-import RestaurantCard from "../../components/RestaurantCard/RestaurantCard";
 import SearchBar from "../../components/SearchBar/SearchBar";
-import RestaurantGridCard from "../../components/ResaurantGridCard/RestaurantGridCard";
 import TopRestaurants from "./TopRestaurants";
 import AllRestaurants from "./AllRestaurants";
 
@@ -12,13 +10,6 @@ const Home = () => {
   const [location, setLocation] = useState("");
   const [search, setSearch] = useState("");
   const [region, setRegion] = useState("");
-
-  const filteredRestaurants = restaurants.data.restaurants.data.filter(
-    (res) =>
-      (location ? res.city === location : true) &&
-      (region ? res.region === region : true) &&
-      res.name.toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <div className="bg-gradient-to-br from-white to-orange-50 min-h-screen text-black">
@@ -48,18 +39,7 @@ const Home = () => {
         {/* Restaurant Carousel */}
         <TopRestaurants zoneId={4}/>
         <AllRestaurants/>
-        {/* Restaurant Grid View */}
-        <section>
-          <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-            Explore More Restaurants
-          </h3>
-
-          <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4 w-full">
-            {filteredRestaurants.map((res, index) => (
-              <RestaurantGridCard key={index} {...res} />
-            ))}
-          </div>
-        </section>
+        
       </div>
     </div>
   );

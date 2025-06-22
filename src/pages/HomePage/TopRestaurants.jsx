@@ -3,8 +3,8 @@ import RestaurantCard from '../../components/RestaurantCard/RestaurantCard';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import useTopRestaurants from '../../app/hooks/useTopRestaurants';
 
-const TopRestaurants = ({ zoneId }) => {
-  const { topRestaurants, loading, error } = useTopRestaurants(zoneId);
+const TopRestaurants = () => {
+  const { topRestaurants, loading, error } = useTopRestaurants();
 
   if (loading) {
     return <div className="p-4"><LoadingSpinner/></div>;

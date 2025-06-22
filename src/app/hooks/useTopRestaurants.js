@@ -7,10 +7,11 @@ import {
   selectTopRestaurantsError,
   selectTopRestaurantsZoneId,
 } from '../slices/topRestaurantsSlice';
+import useLocation from './useLocation';
 
-const useTopRestaurants = (zoneId) => {
+const useTopRestaurants = () => {
   const dispatch = useDispatch();
-
+  const {zoneId} = useLocation()
   const topRestaurants = useSelector(selectTopRestaurants);
   const loading = useSelector(selectTopRestaurantsLoading);
   const error = useSelector(selectTopRestaurantsError);
