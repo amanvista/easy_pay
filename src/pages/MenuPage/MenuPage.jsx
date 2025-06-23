@@ -1,12 +1,13 @@
-import { ChevronLeft, MapPin, ShoppingCart } from "lucide-react";
+import { ChevronLeft, MapPin, ShoppingCart, X } from "lucide-react";
 import restaurants from "../../data/restaurantData";
 import { useNavigate, useParams } from "react-router-dom";
 import MenuItems from "../../components/MenuItems/MenuItems";
 import RestaurantFooter from "../../components/RestaurantFooter/RestaurantFooter";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { menuData } from "../../data/menuData";
 import { useRef, useState } from "react";
 import CategoryMenuModal from "../../components/CategoryMenuModal/CategoryMenuModal";
+import { clearCart } from "../../app/slices/cartSlice";
 
 const MenuPage = () => {
   const [showCategoryMenu, setShowCategoryMenu] = useState(false);
@@ -22,6 +23,7 @@ const MenuPage = () => {
   );
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -156,12 +158,22 @@ const MenuPage = () => {
           <p className="text-sm text-gray-800">
             {cartCount} item{cartCount > 1 ? "s" : ""} added
           </p>
-          <button
-            onClick={() => navigate("/cart")}
-            className="bg-orange-500 text-white px-4 py-2 rounded-xl cursor-pointer font-medium hover:bg-orange-600 transition-all"
-          >
-            View Cart
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate("/cart")}
+              className="bg-orange-500 text-white px-4 py-2 rounded-xl cursor-pointer font-medium hover:bg-orange-600 transition-all"
+            >
+              View Cart
+            </button>
+            <button
+              onClick={() => dispatch(clearCart())}
+              className="flex items-center gap-1 text-gray-700 hover:text-black text-sm font-medium transition"
+              title="Clear Cart"
+            >
+              <X size={16} strokeWidth={2} />
+              <span className="hidden sm:inline">Clear</span>
+            </button>
+          </div>
         </div>
       )}
 

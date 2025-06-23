@@ -6,7 +6,7 @@ import { incrementItem, decrementItem } from "../../app/slices/cartSlice"; // yo
 import { useState } from "react";
 
 const CartPage = () => {
-  const [orderType, setOrderType] = useState("dinein"); // 'dinein' | 'takeaway'
+  const [orderType, setOrderType] = useState("dinein");
   const [tableNumber, setTableNumber] = useState("");
 
   // Time Slot State
@@ -50,6 +50,37 @@ const CartPage = () => {
 
     return slots;
   };
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-center px-6 py-20 bg-white text-gray-700">
+        {/* SVG / Illustration */}
+        <img
+          src="https://www.svgrepo.com/show/489284/cart.svg" // you can replace this with a better quirky svg
+          alt="Empty cart"
+          className="w-32 h-32 mb-6 opacity-70"
+        />
+
+        {/* Quirky Line */}
+        <h2 className="text-xl font-bold mb-2">
+          Oops! Looks like you’re on a diet 😅
+        </h2>
+
+        {/* Subtext */}
+        <p className="text-sm mb-4">
+          Your cart is empty. Add something delicious from the menu!
+        </p>
+
+        {/* CTA Button */}
+        <button
+          onClick={handleBack}
+          className="mt-4 bg-orange-500 text-white px-5 py-2 rounded-xl font-medium hover:bg-orange-600 transition"
+        >
+          Go to Menu
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white text-black pb-32">
@@ -223,12 +254,18 @@ const CartPage = () => {
       </div>
 
       {/* Apply Coupon */}
-      <div className="px-4 mt-4">
+      <div className="mx-4 mt-6 p-4 bg-orange-50 border border-orange-200 rounded-xl flex items-center justify-between">
+        <div>
+          <p className="text-sm font-semibold text-orange-800">Apply Coupon</p>
+          <p className="text-xs text-orange-700">
+            Unlock offers and get instant discounts
+          </p>
+        </div>
         <button
           onClick={() => navigate("/apply-coupon")}
-          className="text-orange-600 underline text-sm font-medium"
+          className="text-sm font-medium text-orange-600 underline hover:text-orange-700 transition"
         >
-          🎟️ Apply Coupon
+          Apply
         </button>
       </div>
 
