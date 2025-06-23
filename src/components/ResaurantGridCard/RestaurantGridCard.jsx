@@ -19,7 +19,7 @@ const RestaurantGridCard = ({
       {/* Image */}
       <div className="relative">
         <img
-          src={main_image_url}
+          src={`http://localhost/images/food/restaurant/${main_image_url}`}
           alt={name}
           className="w-full h-36 object-cover"
         />
