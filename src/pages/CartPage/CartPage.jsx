@@ -4,13 +4,16 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { incrementItem, decrementItem } from "../../app/slices/cartSlice"; // you need to implement these
 import { useState } from "react";
+import DineInSelector from "../../components/DineInSelector/DineInSelector";
 
 const CartPage = () => {
   const [orderType, setOrderType] = useState("dinein");
   const [tableNumber, setTableNumber] = useState("");
+  const [selectedTakeawaySlot, setSelectedTakeawaySlot] = useState(null);
+  const [showTakeawaySlot, setShowTakeawaySlot] = useState(false);
 
   // Time Slot State
-  const [orderTime, setOrderTime] = useState("asap");
+  const [orderTime, setOrderTime] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -36,20 +39,16 @@ const CartPage = () => {
       : 0;
 
   const handleBack = () => navigate(-1);
-  const generateTimeSlots = () => {
-    const slots = [];
-    const now = new Date();
-    now.setMinutes(Math.ceil(now.getMinutes() / 15) * 15); // round to next 15 mins
-
-    for (let i = 0; i < 12; i++) {
-      const slot = new Date(now.getTime() + i * 15 * 60000);
-      const hours = slot.getHours().toString().padStart(2, "0");
-      const minutes = slot.getMinutes().toString().padStart(2, "0");
-      slots.push(`${hours}:${minutes}`);
-    }
-
-    return slots;
-  };
+  const mockTimeSlots = [
+    "12:00 PM",
+    "12:15 PM",
+    "12:30 PM",
+    "12:45 PM",
+    "01:00 PM",
+    "01:15 PM",
+    "01:30 PM",
+    "01:45 PM",
+  ];
 
   if (cartItems.length === 0) {
     return (
@@ -132,54 +131,104 @@ const CartPage = () => {
 
         {/* Table Number Input for Dine-in */}
         {orderType === "dinein" && (
-          <input
-            type="text"
-            value={tableNumber}
-            onChange={(e) => setTableNumber(e.target.value)}
-            placeholder="Enter Table Number"
-            className="mt-3 w-full p-3 border rounded-xl text-sm bg-gray-50"
+          <DineInSelector
+            selectedTable={tableNumber}
+            setSelectedTable={setTableNumber}
           />
         )}
       </div>
 
       {/* Time Slot Selection */}
-      <div className="px-4 mt-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          When do you want your order?
-        </label>
-        <div className="flex gap-4 mb-3">
-          {["asap", "custom"].map((t) => (
-            <button
-              key={t}
-              onClick={() => setOrderTime(t)}
-              className={`px-4 py-2 rounded-xl border ${
-                orderTime === t
-                  ? "bg-orange-500 text-white border-orange-500"
-                  : "bg-white text-gray-700 border-gray-300"
-              }`}
-            >
-              {t === "asap" ? "ASAP" : "Choose Time"}
-            </button>
-          ))}
-        </div>
-
-        {/* Time Selector if Custom Selected */}
-        {orderTime === "custom" && (
-          <select
-            className="w-full p-3 border rounded-xl text-sm bg-gray-50"
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Select a time slot
-            </option>
-            {generateTimeSlots().map((slot) => (
-              <option key={slot} value={slot}>
-                {slot}
-              </option>
+      {orderType === "takeaway" && (
+        <div className="px-4 mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            When do you want your order?
+          </label>
+          <div className="flex gap-4 mb-3">
+            {["asap", "custom"].map((t) => (
+              <button
+                key={t}
+                onClick={() => {
+                  setOrderTime(t);
+                  if (t === "asap") {
+                    const el = document.querySelector("#bill_details");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                className={`px-4 py-2 rounded-xl border ${
+                  orderTime === t
+                    ? "bg-orange-500 text-white border-orange-500"
+                    : "bg-white text-gray-700 border-gray-300"
+                }`}
+              >
+                {t === "asap" ? "Eat Right Now" : "Choose Time"}
+              </button>
             ))}
-          </select>
-        )}
-      </div>
+          </div>
+
+          {/* Time Selector if Custom Selected */}
+          {orderTime === "custom" && (
+            <div className="mt-2">
+              {!selectedTakeawaySlot ? (
+                <div className="w-full flex">
+                  <button
+                    onClick={() => setShowTakeawaySlot(true)}
+                    className="w-full border border-gray-300 p-3 rounded-xl bg-gray-50 text-sm"
+                  >
+                    Select a time slot
+                  </button>
+                </div>
+              ) : (
+                <div className="w-full border border-green-300 p-3 rounded-xl bg-green-50 text-sm flex justify-between items-center">
+                  <span className="font-medium text-green-700">
+                    ✅ {selectedTakeawaySlot}
+                  </span>
+                  <div className="flex gap-2 items-center">
+                    <button
+                      onClick={() => setShowTakeawaySlot(true)}
+                      className="text-xs text-blue-600 underline"
+                    >
+                      Change
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Dropdown modal / list */}
+              {showTakeawaySlot && (
+                <div className="mt-2 grid grid-cols-3 gap-2">
+                  {mockTimeSlots.map((slot) => (
+                    <button
+                      key={slot}
+                      onClick={() => {
+                        setSelectedTakeawaySlot(slot);
+                        setShowTakeawaySlot(false);
+                      }}
+                      className="p-2 rounded-xl bg-white border hover:bg-orange-100 text-sm"
+                    >
+                      {slot}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {selectedTakeawaySlot && (
+                <div className="mt-2 flex justify-center">
+                  <button
+                    onClick={() => {
+                      const el = document.querySelector("#bill_details");
+                      if (el) el.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="text-xs text-orange-500 underline"
+                  >
+                    View Bill Summary
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Cart Items */}
       <div className=" m-4 px-4 py-6 space-y-4 border border-gray-200 p-4 rounded-2xl shadow-sm">
@@ -270,7 +319,10 @@ const CartPage = () => {
       </div>
 
       {/* Bill Details */}
-      <div className="mx-4 my-6 border-t pt-4 space-y-2 text-sm text-gray-700">
+      <div
+        className="mx-4 my-6 border-t pt-4 space-y-2 text-sm text-gray-700"
+        id="bill_details"
+      >
         <div className="flex justify-between">
           <span>Item Total</span>
           <span>₹{totalMRP}</span>
@@ -320,7 +372,7 @@ const CartPage = () => {
           <button
             className="text-xs underline text-orange-500"
             onClick={() => {
-              const el = document.querySelector("#bill-details");
+              const el = document.querySelector("#bill_details");
               if (el) el.scrollIntoView({ behavior: "smooth" });
             }}
           >
@@ -329,7 +381,7 @@ const CartPage = () => {
         </div>
         <button
           onClick={() => navigate("/payment")}
-          className="bg-orange-500 text-white px-5 py-2 rounded-xl font-medium hover:bg-orange-600 transition-all"
+          className="bg-green-600 text-white px-5 py-2 rounded-xl font-medium hover:bg-green-700 transition-all"
         >
           Make Payment
         </button>
