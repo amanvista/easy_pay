@@ -4,7 +4,7 @@ const restaurants = {
     restaurants: {
       data: [
         {
-          id: "res010",
+          id: 12,
           name: "The Curry Junction",
           tagline: "Desi Tadka Served Hot",
           main_image_url:
@@ -18,7 +18,7 @@ const restaurants = {
           region: "North",
         },
         {
-          id: "res011",
+          id: 13,
           name: "Flame & Grill",
           tagline: "Barbecue Delights",
           main_image_url:
@@ -32,7 +32,7 @@ const restaurants = {
           region: "South",
         },
         {
-          id: "res012",
+          id: 11,
           name: "Namma Ooru Meals",
           tagline: "Home-style South Indian Meals",
           main_image_url:
@@ -46,7 +46,7 @@ const restaurants = {
           region: "South",
         },
         {
-          id: "res013",
+          id: 10,
           name: "The Kolkata Biryani House",
           tagline: "City of Joy’s Finest Biryani",
           main_image_url:
@@ -60,7 +60,7 @@ const restaurants = {
           region: "East",
         },
         {
-          id: "res014",
+          id: 1,
           name: "Punjabi Rasoi",
           tagline: "Tandoori Nights & Lassi Mornings",
           main_image_url:
@@ -74,7 +74,7 @@ const restaurants = {
           region: "North",
         },
         {
-          id: "res015",
+          id: 2,
           name: "Arabian Nights",
           tagline: "Shawarma, Mandi & More",
           main_image_url:
@@ -88,7 +88,7 @@ const restaurants = {
           region: "West",
         },
         {
-          id: "res026",
+          id: 3,
           name: "Khaati Peeti Baatein",
           tagline: "Dil Se Desi, Taste Mein Best",
           main_image_url:
@@ -102,7 +102,7 @@ const restaurants = {
           region: "North",
         },
         {
-          id: "res027",
+          id: 4,
           name: "Biryani & Beyond",
           tagline: "Layers of Flavour, Delhi Style",
           main_image_url:
@@ -116,7 +116,7 @@ const restaurants = {
           region: "east",
         },
         {
-          id: "res028",
+          id: 6,
           name: "The Parantha Affair",
           tagline: "Stuffed, Crispy & Loaded with Love",
           main_image_url:
@@ -130,7 +130,7 @@ const restaurants = {
           region: "South",
         },
         {
-          id: "res029",
+          id: 5,
           name: "Pind Punjab",
           tagline: "Tandoori Tales from the North",
           main_image_url:
@@ -144,7 +144,7 @@ const restaurants = {
           region: "North",
         },
         {
-          id: "res030",
+          id: 8,
           name: "Wok In The North",
           tagline: "Asian Bowls with Delhi Soul",
           main_image_url:
@@ -158,7 +158,7 @@ const restaurants = {
           region: "east",
         },
         {
-          id: "res031",
+          id: 9,
           name: "Bun Tikki Central",
           tagline: "Desi Burgers, Pure Dilli",
           main_image_url:
@@ -172,7 +172,7 @@ const restaurants = {
           region: "south",
         },
         {
-          id: "res032",
+          id: 7,
           name: "Tandoori Junction",
           tagline: "Where Grills Rule the Plate",
           main_image_url:
@@ -186,7 +186,7 @@ const restaurants = {
           region: "North",
         },
         {
-          id: "res033",
+          id: 13,
           name: "Delhi Momo House",
           tagline: "Spicy Dumplings, Dilli Style",
           main_image_url:

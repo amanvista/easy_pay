@@ -109,7 +109,7 @@ const MenuPage = () => {
             {/* Rating + Cost */}
             <div className="text-right ml-auto sm:text-left">
               <p className="text-sm text-gray-700">
-                ⭐ {restaurant.avg_rating.toFixed(1)}
+                ⭐ {restaurant.avg_rating?.toFixed(1)}
               </p>
               {restaurant.top_dishes && (
                 <p className="text-xs text-gray-500 mt-1">
