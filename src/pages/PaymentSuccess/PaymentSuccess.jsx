@@ -176,7 +176,44 @@ const PaymentSuccess = () => {
             variants={buttonVariants}
             whileHover="hover"
             whileTap="tap"
-            onClick={() => navigate('/order-tracking')}
+            onClick={() => {
+              // Store order data for tracking page
+              const trackingData = {
+                ...orderData,
+                restaurant: {
+                  name: "The Urban Tandoor",
+                  logo: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=100&h=100&fit=crop&crop=center",
+                  address: "Sector 56, Gurgaon",
+                  contact: "+91 9876543210"
+                },
+                items: [
+                  { name: "Paneer Tikka", qty: 2, price: 280 },
+                  { name: "Butter Naan", qty: 1, price: 60 }
+                ],
+                currentStage: 1,
+                stages: [
+                  { id: 1, name: "Order Placed", time: "7:58 PM", icon: "📝", description: "Your order has been placed successfully" },
+                  { id: 2, name: "Restaurant Accepted", time: null, icon: "✅", description: "Restaurant has confirmed your order" },
+                  { id: 3, name: "Food Being Prepared", time: null, icon: "👨‍🍳", description: "Chef is preparing your delicious meal" },
+                  { id: 4, name: "Order Packed", time: null, icon: "📦", description: "Your order is packed and ready" },
+                  { id: 5, name: "Out for Delivery", time: null, icon: "🚗", description: "Delivery partner is on the way" },
+                  { id: 6, name: "Delivered", time: null, icon: "🎉", description: "Order delivered successfully" }
+                ],
+                etaMinutes: 25,
+                partner: {
+                  name: "Rahul Kumar",
+                  phone: "+91 99999 88888",
+                  vehicle: "DL 8C AB 4567",
+                  rating: 4.8
+                },
+                address: "H-22, Sector 56, Gurgaon - 122011",
+                userPhone: "+91 9876543210",
+                orderTime: "7:58 PM",
+                estimatedDelivery: "8:23 PM"
+              };
+              localStorage.setItem('currentOrder', JSON.stringify(trackingData));
+              navigate('/order-tracking');
+            }}
             className="w-full bg-green-500 text-white py-3 px-6 rounded-xl font-medium shadow-lg hover:bg-green-600 transition-colors"
           >
             Track Order

@@ -23,10 +23,10 @@ const TestPage = () => {
       color: 'bg-green-500 hover:bg-green-600'
     },
     {
-      title: 'Order Status',
-      description: 'Track order progress',
+      title: 'Order Tracking',
+      description: 'Live order tracking with timeline',
       icon: Package,
-      path: '/order-status',
+      path: '/order-tracking',
       color: 'bg-purple-500 hover:bg-purple-600'
     }
   ];

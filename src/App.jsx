@@ -16,6 +16,7 @@ import PaymentFailed from "./pages/PaymentFailed/PaymentFailed";
 import PaymentTestPage from "./pages/PaymentTestPage/PaymentTestPage";
 import TestPage from "./pages/TestPage/TestPage";
 import OrderHistoryPage from "./pages/OrderHistoryPage/OrderHistoryPage";
+import OrderTrackingPage from "./pages/OrderTrackingPage/OrderTrackingPage";
 import OrderStatusPage from "./pages/OrderStatusPage/OrderStatusPage";
 import AddAddressPage from "./pages/AddAddressPage/AddAddressPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
@@ -90,15 +91,15 @@ const App = () => {
                 }
               />
               <Route
-                path="/order-status"
+                path="/order-tracking"
                 element={
                   <ProtectedRoute>
-                    <OrderStatusPage />
+                    <OrderTrackingPage />
                   </ProtectedRoute>
                 }
               />
               <Route
-                path="/order-tracking"
+                path="/order-status"
                 element={
                   <ProtectedRoute>
                     <OrderStatusPage />
