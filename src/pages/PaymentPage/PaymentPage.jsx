@@ -23,9 +23,26 @@ const PaymentPage = () => {
   const handleSubmitPayment = () => {
     setIsUploaded(true);
     setTimeout(() => {
-      navigate('/confirmation', { 
-        state: { orderId: `ORD-${Math.floor(Math.random() * 1000000)}` } 
-      });
+      // Simulate payment processing - 80% success rate for demo
+      const isSuccess = Math.random() > 0.2;
+      
+      if (isSuccess) {
+        navigate('/payment-success', { 
+          state: { 
+            orderId: `BLF${Math.floor(Math.random() * 100000)}`,
+            amount: total,
+            paymentMethod: 'UPI'
+          } 
+        });
+      } else {
+        navigate('/payment-failed', { 
+          state: { 
+            transactionId: `TXN${Math.floor(Math.random() * 100000)}`,
+            amount: total,
+            paymentMethod: 'UPI'
+          } 
+        });
+      }
     }, 2000);
   };
 

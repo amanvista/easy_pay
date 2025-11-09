@@ -11,6 +11,9 @@ import CartPage from "./pages/CartPage/CartPage";
 import Login from "./pages/LoginPage/Login";
 import Register from "./pages/RegisterPage/Register";
 import PaymentPage from "./pages/PaymentPage/PaymentPage";
+import PaymentSuccess from "./pages/PaymentSuccess/PaymentSuccess";
+import PaymentFailed from "./pages/PaymentFailed/PaymentFailed";
+import PaymentTestPage from "./pages/PaymentTestPage/PaymentTestPage";
 import OrderStatusPage from "./pages/OrderStatusPage/OrderStatusPage";
 import AddAddressPage from "./pages/AddAddressPage/AddAddressPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
@@ -61,7 +64,39 @@ const App = () => {
                 }
               />
               <Route
+                path="/payment-success"
+                element={
+                  <ProtectedRoute>
+                    <PaymentSuccess />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/payment-failed"
+                element={
+                  <ProtectedRoute>
+                    <PaymentFailed />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/payment-test"
+                element={
+                  <ProtectedRoute>
+                    <PaymentTestPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/order-status"
+                element={
+                  <ProtectedRoute>
+                    <OrderStatusPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/order-tracking"
                 element={
                   <ProtectedRoute>
                     <OrderStatusPage />
