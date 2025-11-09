@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authApi from '../../services/authApi';
 
-// Async thunk for login using authApi
+// Async thunk for login using authApi (supports email/password)
 export const loginUser = createAsyncThunk(
   'auth/login',
-  async ({ phone, password }, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await authApi.login(phone, password);
+      const response = await authApi.login(email, password);
       // Store token in local storage
       localStorage.setItem('userToken', response.token);
       return response;
@@ -45,10 +45,12 @@ export const checkAuth = createAsyncThunk('auth/checkAuth', async () => {
   throw new Error('No token found');
 });
 
+// Initialize state without token - authentication must be verified
+// This prevents unauthorized access by assuming token in localStorage is valid
 const initialState = {
   loading: false,
   userInfo: null,
-  userToken: localStorage.getItem('userToken') || null,
+  userToken: null, // Don't initialize from localStorage - must be verified first
   error: null,
   success: false,
 };
