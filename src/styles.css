@@ -127,4 +127,70 @@
 
 .bg-error-gradient {
   background: linear-gradient(135deg, #ffeaea 0%, #ffcccc 100%);
+}/* Ord
+er History Animations */
+@keyframes order-card-hover {
+  0% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  100% {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@keyframes filter-tab-active {
+  0% {
+    background-color: transparent;
+  }
+  100% {
+    background-color: rgb(240, 253, 244);
+  }
+}
+
+.order-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.order-card-hover:hover {
+  animation: order-card-hover 0.3s ease-out forwards;
+}
+
+.filter-tab-active {
+  animation: filter-tab-active 0.2s ease-out forwards;
+}
+
+/* Scrollbar styling for order list */
+.order-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.order-list-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.order-list-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.order-list-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Modal backdrop blur effect */
+.modal-backdrop {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Status badge animations */
+.status-badge {
+  transition: all 0.2s ease-in-out;
+}
+
+.status-badge:hover {
+  transform: scale(1.05);
 }

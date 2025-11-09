@@ -14,6 +14,8 @@ import PaymentPage from "./pages/PaymentPage/PaymentPage";
 import PaymentSuccess from "./pages/PaymentSuccess/PaymentSuccess";
 import PaymentFailed from "./pages/PaymentFailed/PaymentFailed";
 import PaymentTestPage from "./pages/PaymentTestPage/PaymentTestPage";
+import TestPage from "./pages/TestPage/TestPage";
+import OrderHistoryPage from "./pages/OrderHistoryPage/OrderHistoryPage";
 import OrderStatusPage from "./pages/OrderStatusPage/OrderStatusPage";
 import AddAddressPage from "./pages/AddAddressPage/AddAddressPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
@@ -100,6 +102,22 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <OrderStatusPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/order-history"
+                element={
+                  <ProtectedRoute>
+                    <OrderHistoryPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/test"
+                element={
+                  <ProtectedRoute>
+                    <TestPage />
                   </ProtectedRoute>
                 }
               />
