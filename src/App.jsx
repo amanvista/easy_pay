@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/HomePage/HomePage";
 import "./styles.css";
@@ -10,6 +12,7 @@ import Login from "./pages/LoginPage/Login";
 import Register from "./pages/RegisterPage/Register";
 import PaymentPage from "./pages/PaymentPage/PaymentPage";
 import OrderStatusPage from "./pages/OrderStatusPage/OrderStatusPage";
+import AddAddressPage from "./pages/AddAddressPage/AddAddressPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AuthInitializer from "./components/AuthInitializer/AuthInitializer";
 
@@ -65,9 +68,29 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/add-address"
+                element={
+                  <ProtectedRoute>
+                    <AddAddressPage />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
           </Routes>
         </BrowserRouter>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </AuthInitializer>
     </Provider>
   );

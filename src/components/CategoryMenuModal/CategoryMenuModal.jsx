@@ -9,7 +9,7 @@ const CategoryMenuModal = ({
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center">
+    <div className="fixed inset-0 z-[100] bg-black/30 backdrop-blur-sm flex justify-center items-center">
       <div className="bg-white rounded-xl p-6 shadow-lg w-80 max-h-[80vh] overflow-y-auto relative">
         <button
           onClick={onClose}

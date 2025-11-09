@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 
 const Modal = ({ onClose, children }) => (
-  <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center px-4 py-8 mb-8">
+  <div className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-center justify-center px-4 py-8 mb-8">
     <div className="bg-white rounded-2xl p-6 relative w-full max-w-md shadow-xl">
       <button
         onClick={onClose}
