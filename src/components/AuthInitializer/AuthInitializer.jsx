@@ -20,6 +20,7 @@ const AuthInitializer = ({ children }) => {
         console.log('Initial auth check failed:', error);
       });
     }
+    // If no token, loading state is already false from initialState
   }, [dispatch]);
 
   return children;

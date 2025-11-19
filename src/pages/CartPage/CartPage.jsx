@@ -2,18 +2,16 @@
 import { ChevronLeft } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { incrementItem, decrementItem } from "../../app/slices/cartSlice"; // you need to implement these
+import { incrementItem, decrementItem, clearCart } from "../../app/slices/cartSlice";
 import { useState } from "react";
-import DineInSelector from "../../components/DineInSelector/DineInSelector";
+import orderService from "../../services/orderService";
+import { toast } from "react-toastify";
 
 const CartPage = () => {
-  const [orderType, setOrderType] = useState("dinein");
-  const [tableNumber, setTableNumber] = useState("");
-  const [selectedTakeawaySlot, setSelectedTakeawaySlot] = useState(null);
-  const [showTakeawaySlot, setShowTakeawaySlot] = useState(false);
-
-  // Time Slot State
-  const [orderTime, setOrderTime] = useState("");
+  const [orderType, setOrderType] = useState("delivery");
+  const [deliveryPartner, setDeliveryPartner] = useState("porter");
+  const [instructions, setInstructions] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -24,11 +22,11 @@ const CartPage = () => {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const savings = Math.round(0.3 * totalMRP);
 
   const platformFee = 10;
+  const deliveryCharge = orderType === "delivery" ? 40 : 0;
   const gst = Math.round(0.05 * totalMRP);
-  const totalPay = totalMRP + platformFee + gst - savings;
+  const totalPay = totalMRP + platformFee + deliveryCharge + gst;
   const maxEta =
     cartItems.length > 0
       ? Math.max(
@@ -39,16 +37,55 @@ const CartPage = () => {
       : 0;
 
   const handleBack = () => navigate(-1);
-  const mockTimeSlots = [
-    "12:00 PM",
-    "12:15 PM",
-    "12:30 PM",
-    "12:45 PM",
-    "01:00 PM",
-    "01:15 PM",
-    "01:30 PM",
-    "01:45 PM",
-  ];
+
+  const handlePayment = async () => {
+    if (isProcessing) return;
+
+    setIsProcessing(true);
+    try {
+      // Prepare order data
+      const orderData = {
+        restaurant_id: restaurant?.id,
+        total_amount: totalMRP,
+        tax_amount: gst,
+        discount_amount: 0,
+        payment_method: "ONLINE",
+        payment_status_id: 1, // Paid
+        order_status_id: 1, // Pending/Confirmed
+        delivery_type: orderType,
+        delivery_partner: orderType === "delivery" ? deliveryPartner : null,
+        special_instructions: instructions || null,
+        items: cartItems.map((item) => ({
+          menu_item_id: item.id,
+          name: item.name,
+          image: item.featured_image_url || item.image_url,
+          quantity: item.quantity,
+          price: parseFloat(item.price),
+        })),
+      };
+
+      console.log("📤 Sending order data:", JSON.stringify(orderData, null, 2));
+
+      // Create order
+      const response = await orderService.createOrder(orderData);
+      
+      // Clear cart
+      dispatch(clearCart());
+      
+      // Show success message
+      toast.success("Order placed successfully!");
+      
+      // Navigate to success page
+      navigate("/payment-success", {
+        state: { orderDetails: response.data || response },
+      });
+    } catch (error) {
+      console.error("Error creating order:", error);
+      toast.error(error.message || "Failed to place order. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -100,135 +137,6 @@ const CartPage = () => {
           </p>
         </div>
       </div>
-
-      {/* Savings Banner */}
-      {savings > 0 && (
-        <div className="bg-green-100 text-green-800 p-3 mx-4 mt-4 rounded-lg text-sm font-medium">
-          🎉 You’re saving ₹{savings} on this order!
-        </div>
-      )}
-
-      {/* Order Type Selection */}
-      <div className="px-4 mt-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Order Type
-        </label>
-        <div className="flex gap-4">
-          {["dinein", "takeaway"].map((type) => (
-            <button
-              key={type}
-              onClick={() => setOrderType(type)}
-              className={`px-4 py-2 rounded-xl border ${
-                orderType === type
-                  ? "bg-orange-500 text-white border-orange-500"
-                  : "bg-white text-gray-700 border-gray-300"
-              }`}
-            >
-              {type === "dinein" ? "Dine-in" : "Takeaway"}
-            </button>
-          ))}
-        </div>
-
-        {/* Table Number Input for Dine-in */}
-        {orderType === "dinein" && (
-          <DineInSelector
-            selectedTable={tableNumber}
-            setSelectedTable={setTableNumber}
-          />
-        )}
-      </div>
-
-      {/* Time Slot Selection */}
-      {orderType === "takeaway" && (
-        <div className="px-4 mt-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            When do you want your order?
-          </label>
-          <div className="flex gap-4 mb-3">
-            {["asap", "custom"].map((t) => (
-              <button
-                key={t}
-                onClick={() => {
-                  setOrderTime(t);
-                  if (t === "asap") {
-                    const el = document.querySelector("#bill_details");
-                    if (el) el.scrollIntoView({ behavior: "smooth" });
-                  }
-                }}
-                className={`px-4 py-2 rounded-xl border ${
-                  orderTime === t
-                    ? "bg-orange-500 text-white border-orange-500"
-                    : "bg-white text-gray-700 border-gray-300"
-                }`}
-              >
-                {t === "asap" ? "Eat Right Now" : "Choose Time"}
-              </button>
-            ))}
-          </div>
-
-          {/* Time Selector if Custom Selected */}
-          {orderTime === "custom" && (
-            <div className="mt-2">
-              {!selectedTakeawaySlot ? (
-                <div className="w-full flex">
-                  <button
-                    onClick={() => setShowTakeawaySlot(true)}
-                    className="w-full border border-gray-300 p-3 rounded-xl bg-gray-50 text-sm"
-                  >
-                    Select a time slot
-                  </button>
-                </div>
-              ) : (
-                <div className="w-full border border-green-300 p-3 rounded-xl bg-green-50 text-sm flex justify-between items-center">
-                  <span className="font-medium text-green-700">
-                    ✅ {selectedTakeawaySlot}
-                  </span>
-                  <div className="flex gap-2 items-center">
-                    <button
-                      onClick={() => setShowTakeawaySlot(true)}
-                      className="text-xs text-blue-600 underline"
-                    >
-                      Change
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Dropdown modal / list */}
-              {showTakeawaySlot && (
-                <div className="mt-2 grid grid-cols-3 gap-2">
-                  {mockTimeSlots.map((slot) => (
-                    <button
-                      key={slot}
-                      onClick={() => {
-                        setSelectedTakeawaySlot(slot);
-                        setShowTakeawaySlot(false);
-                      }}
-                      className="p-2 rounded-xl bg-white border hover:bg-orange-100 text-sm"
-                    >
-                      {slot}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {selectedTakeawaySlot && (
-                <div className="mt-2 flex justify-center">
-                  <button
-                    onClick={() => {
-                      const el = document.querySelector("#bill_details");
-                      if (el) el.scrollIntoView({ behavior: "smooth" });
-                    }}
-                    className="text-xs text-orange-500 underline"
-                  >
-                    View Bill Summary
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Cart Items */}
       <div className=" m-4 px-4 py-6 space-y-4 border border-gray-200 p-4 rounded-2xl shadow-sm">
@@ -291,31 +199,87 @@ const CartPage = () => {
       </div>
 
       {/* Restaurant Note */}
-      <div className="px-4 mt-2">
+      <div className="px-4 mt-4">
         <label className="block text-sm text-gray-600 mb-1">
           Add Instructions for the Restaurant
         </label>
         <input
           type="text"
           placeholder="E.g. Less spicy"
+          value={instructions}
+          onChange={(e) => setInstructions(e.target.value)}
           className="w-full p-3 border rounded-xl text-sm bg-gray-50"
         />
       </div>
 
-      {/* Apply Coupon */}
-      <div className="mx-4 mt-6 p-4 bg-orange-50 border border-orange-200 rounded-xl flex items-center justify-between">
-        <div>
-          <p className="text-sm font-semibold text-orange-800">Apply Coupon</p>
-          <p className="text-xs text-orange-700">
-            Unlock offers and get instant discounts
-          </p>
+      {/* Order Type Selection */}
+      <div className="px-4 mt-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Order Type
+        </label>
+        <div className="flex gap-4 mb-4">
+          {[
+            { value: "delivery", label: "Delivery" },
+            { value: "takeaway", label: "Eat Right Now" },
+          ].map((type) => (
+            <button
+              key={type.value}
+              onClick={() => setOrderType(type.value)}
+              className={`flex-1 px-4 py-3 rounded-xl border font-medium transition ${
+                orderType === type.value
+                  ? "bg-orange-500 text-white border-orange-500"
+                  : "bg-white text-gray-700 border-gray-300 hover:border-orange-300"
+              }`}
+            >
+              {type.label}
+            </button>
+          ))}
         </div>
-        <button
-          onClick={() => navigate("/apply-coupon")}
-          className="text-sm font-medium text-orange-600 underline hover:text-orange-700 transition"
-        >
-          Apply
-        </button>
+
+        {/* Delivery Partner Selection */}
+        {orderType === "delivery" && (
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Delivery Partner
+            </label>
+            <div className="space-y-3">
+              <div
+                onClick={() => setDeliveryPartner("porter")}
+                className={`p-4 rounded-xl border cursor-pointer transition ${
+                  deliveryPartner === "porter"
+                    ? "border-orange-500 bg-orange-50"
+                    : "border-gray-300 bg-white hover:border-orange-300"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        deliveryPartner === "porter"
+                          ? "border-orange-500"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {deliveryPartner === "porter" && (
+                        <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Porter</p>
+                      <p className="text-xs text-gray-600">
+                        Estimated delivery: 30-40 mins
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-gray-900">₹40</p>
+                    <p className="text-xs text-gray-500">Delivery charge</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bill Details */}
@@ -331,10 +295,12 @@ const CartPage = () => {
           <span>Platform Fee</span>
           <span>₹{platformFee}</span>
         </div>
-        <div className="flex justify-between text-green-600 font-medium">
-          <span>Discount</span>
-          <span>-₹{savings}</span>
-        </div>
+        {orderType === "delivery" && (
+          <div className="flex justify-between">
+            <span>Delivery Charge</span>
+            <span>₹{deliveryCharge}</span>
+          </div>
+        )}
         <div className="flex justify-between">
           <span>GST & Other</span>
           <span>₹{gst}</span>
@@ -380,10 +346,11 @@ const CartPage = () => {
           </button>
         </div>
         <button
-          onClick={() => navigate("/payment")}
-          className="bg-green-600 text-white px-5 py-2 rounded-xl font-medium hover:bg-green-700 transition-all"
+          onClick={handlePayment}
+          disabled={isProcessing}
+          className="bg-green-600 text-white px-5 py-2 rounded-xl font-medium hover:bg-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Make Payment
+          {isProcessing ? "Processing..." : "Make Payment"}
         </button>
       </div>
     </div>

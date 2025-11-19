@@ -1,27 +1,24 @@
 // services/restaurantApi.js
-import axios from 'axios';
+import { restaurantApi as apiClient } from './createApi';
 
-const API_BASE_URL = 'http://localhost/easy_pay_backend/api'; // Replace with your actual API base URL
+const restaurantService = {
+  /**
+   * Get featured restaurants (paginated)
+   * @param {number} page - Page number (default: 1)
+   * @param {number} limit - Items per page (default: 10)
+   * @returns {Promise<Object>} - Paginated featured restaurants
+   */
+  getFeatured: async (page = 1, limit = 10) => {
+    try {
+      const response = await apiClient.get('/restaurant/featured', {
+        params: { page, limit }
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch featured restaurants');
+    }
+  },
 
-// Create axios instance with common configuration
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    // 'X-API-Key': process.env.REACT_APP_API_KEY // Set your API key in environment variables
-  }
-});
-
-// Add JWT to requests if available
-apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-const restaurantApi = {
   /**
    * Get restaurant details by ID
    * @param {string} restaurantId - The ID of the restaurant
@@ -33,6 +30,38 @@ const restaurantApi = {
       return response.data.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch restaurant details');
+    }
+  },
+
+  /**
+   * Get restaurant by ID
+   * @param {string} restaurantId - The ID of the restaurant
+   * @returns {Promise<Object>} - Restaurant details
+   */
+  getRestaurantById: async (restaurantId) => {
+    try {
+      const response = await apiClient.get(`/restaurant/${restaurantId}`);
+      return response.data.data || response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch restaurant details');
+    }
+  },
+
+  /**
+   * Get restaurant menus with categories and items (paginated)
+   * @param {string} restaurantId - The ID of the restaurant
+   * @param {number} page - Page number (default: 1)
+   * @param {number} limit - Items per page (default: 10)
+   * @returns {Promise<Object>} - Paginated menus with categories and items
+   */
+  getMenusWithDetails: async (restaurantId, page = 1, limit = 10) => {
+    try {
+      const response = await apiClient.get(`/menu/${restaurantId}/menus-with-details`, {
+        params: { page, limit }
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch restaurant menus');
     }
   },
 
@@ -146,4 +175,4 @@ const restaurantApi = {
   }
 };
 
-export default restaurantApi;
+export default restaurantService;

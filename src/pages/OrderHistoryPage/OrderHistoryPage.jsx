@@ -1,214 +1,205 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ChevronLeft, Package } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { mockOrders } from '../../data/mockOrders';
-import OrderFilterBar from '../../components/OrderFilterBar/OrderFilterBar';
-import OrderCard from '../../components/OrderCard/OrderCard';
-import OrderDetailsModal from '../../components/OrderDetailsModal/OrderDetailsModal';
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { ChevronLeft, Package, Clock } from "lucide-react";
+import orderService from "../../services/orderService";
 
-/**
- * OrderHistoryPage - Complete order history with filtering and sorting
- */
 const OrderHistoryPage = () => {
   const navigate = useNavigate();
-  const [orders, setOrders] = useState(mockOrders);
-  const [filteredOrders, setFilteredOrders] = useState(mockOrders);
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [activeSort, setActiveSort] = useState('newest');
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [showOrderDetails, setShowOrderDetails] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const observerTarget = useRef(null);
 
-  // Filter orders based on active filter
+  const statusLabels = {
+    1: { label: "Order Placed", color: "bg-yellow-100 text-yellow-800" },
+    2: { label: "Accepted", color: "bg-blue-100 text-blue-800" },
+    3: { label: "Preparing", color: "bg-purple-100 text-purple-800" },
+    4: { label: "Ready", color: "bg-green-100 text-green-800" },
+    5: { label: "Picked Up", color: "bg-gray-100 text-gray-800" },
+    6: { label: "Cancelled", color: "bg-red-100 text-red-800" },
+    7: { label: "Rejected", color: "bg-red-100 text-red-800" },
+  };
+
   useEffect(() => {
-    let filtered = [...orders];
+    fetchOrders();
+  }, [page]);
 
-    switch (activeFilter) {
-      case 'ongoing':
-        filtered = orders.filter(order => order.status === 'In Progress');
-        break;
-      case 'past':
-        filtered = orders.filter(order => order.status === 'Delivered');
-        break;
-      case 'cancelled':
-        filtered = orders.filter(order => order.status === 'Cancelled');
-        break;
-      default:
-        filtered = orders;
-    }
-
-    setFilteredOrders(filtered);
-  }, [orders, activeFilter]);
-
-  // Sort orders based on active sort
   useEffect(() => {
-    let sorted = [...filteredOrders];
-
-    switch (activeSort) {
-      case 'oldest':
-        sorted.sort((a, b) => new Date(a.date) - new Date(b.date));
-        break;
-      case 'amount-high':
-        sorted.sort((a, b) => b.total - a.total);
-        break;
-      case 'amount-low':
-        sorted.sort((a, b) => a.total - b.total);
-        break;
-      default: // newest
-        sorted.sort((a, b) => new Date(b.date) - new Date(a.date));
-    }
-
-    setFilteredOrders(sorted);
-  }, [activeSort, activeFilter, orders]);
-
-  const handleFilterChange = (filter) => {
-    setActiveFilter(filter);
-  };
-
-  const handleSortChange = (sort) => {
-    setActiveSort(sort);
-  };
-
-  const handleViewDetails = (order) => {
-    setSelectedOrder(order);
-    setShowOrderDetails(true);
-  };
-
-  const handleReorder = (order) => {
-    // Simulate reorder API call
-    toast.success(`Reordering from ${order.restaurant}...`, {
-      position: 'top-right',
-      autoClose: 2000,
-    });
-    
-    // Navigate to restaurant menu or cart
-    setTimeout(() => {
-      navigate('/cart');
-    }, 1000);
-  };
-
-  const handleRateOrder = (order) => {
-    // Simulate rating submission
-    const rating = Math.floor(Math.random() * 2) + 4; // Random rating 4-5
-    
-    setOrders(prevOrders =>
-      prevOrders.map(o =>
-        o.id === order.id ? { ...o, rating } : o
-      )
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 0.1 }
     );
-    
-    toast.success(`Thank you for rating ${order.restaurant}!`, {
-      position: 'top-right',
-      autoClose: 2000,
-    });
-  };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
       }
+    };
+  }, [hasMore, loading]);
+
+  const fetchOrders = async () => {
+    if (!hasMore && page > 1) return;
+    
+    setLoading(true);
+    try {
+      const response = await orderService.getUserOrders(page, 10);
+      const newOrders = response.data.orders || [];
+      
+      if (page === 1) {
+        setOrders(newOrders);
+      } else {
+        setOrders((prev) => [...prev, ...newOrders]);
+      }
+      
+      setHasMore(page < (response.data.totalPages || 1));
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-  };
+  if (loading && orders.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your orders...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate(-1)}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <ChevronLeft className="w-6 h-6 text-gray-700" />
-            </motion.button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">My Orders</h1>
-              <p className="text-sm text-gray-600">
-                {filteredOrders.length} order{filteredOrders.length !== 1 ? 's' : ''} found
-              </p>
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="sticky top-0 z-50 bg-white shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
+          <button
+            onClick={() => navigate("/")}
+            className="p-2 hover:bg-gray-100 rounded-full transition"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <div>
+            <h1 className="text-lg font-semibold text-gray-900">My Orders</h1>
+            <p className="text-sm text-gray-500">View your order history</p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Filter and Sort Bar */}
-        <OrderFilterBar
-          onFilterChange={handleFilterChange}
-          onSortChange={handleSortChange}
-          activeFilter={activeFilter}
-          activeSort={activeSort}
-        />
-
-        {/* Orders List */}
-        {filteredOrders.length > 0 ? (
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="space-y-4"
-          >
-            {filteredOrders.map((order) => (
-              <motion.div key={order.id} variants={itemVariants}>
-                <OrderCard
-                  order={order}
-                  onViewDetails={handleViewDetails}
-                  onReorder={handleReorder}
-                  onRateOrder={handleRateOrder}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-        ) : (
-          /* Empty State */
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-16"
-          >
-            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Package className="w-12 h-12 text-gray-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No orders found
-            </h3>
-            <p className="text-gray-600 mb-6">
-              {activeFilter === 'all' 
-                ? "You haven't placed any orders yet."
-                : `No ${activeFilter} orders found.`
-              }
-            </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/')}
-              className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium transition-colors"
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        {orders.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+            <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">No Orders Yet</h2>
+            <p className="text-gray-600 mb-6">Start ordering delicious food!</p>
+            <button
+              onClick={() => navigate("/")}
+              className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
             >
-              Start Ordering
-            </motion.button>
-          </motion.div>
+              Browse Restaurants
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {orders.map((order) => {
+              const statusId = order.order_status_id || order.orderStatusId || 1;
+              const status = statusLabels[statusId] || statusLabels[1];
+              const orderCode = order.order_code || order.orderCode || "N/A";
+              const finalAmount = order.final_amount || order.finalAmount || 0;
+              const createdAt = order.created_at || order.createdAt;
+              const restaurantName = order.restaurant_name || order.restaurantName || "Restaurant";
+              const orderItems = order.order_items || order._order_items || [];
+
+              return (
+                <div
+                  key={order.id}
+                  className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition cursor-pointer"
+                  onClick={() => navigate(`/order-tracking/${order.id}`)}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-gray-900">{restaurantName}</h3>
+                        <span className={`text-xs px-2 py-1 rounded-full ${status.color}`}>
+                          {status.label}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-500">Order #{orderCode}</p>
+                      <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                        <Clock className="w-3 h-3" />
+                        {new Date(createdAt).toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-gray-900">
+                        ₹{parseFloat(finalAmount).toFixed(2)}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {orderItems.length} item{orderItems.length !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+                  </div>
+
+                  {orderItems.length > 0 && (
+                    <div className="flex gap-2 overflow-x-auto pb-2">
+                      {orderItems.slice(0, 3).map((item, idx) => (
+                        <div key={idx} className="flex items-center gap-2 bg-gray-50 rounded px-2 py-1 text-xs whitespace-nowrap">
+                          {item.image && (
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-6 h-6 rounded object-cover"
+                              onError={(e) => e.target.style.display = 'none'}
+                            />
+                          )}
+                          <span className="text-gray-700">
+                            {item.quantity}× {item.name}
+                          </span>
+                        </div>
+                      ))}
+                      {orderItems.length > 3 && (
+                        <span className="text-xs text-gray-500 self-center">
+                          +{orderItems.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <button className="text-sm text-orange-600 font-medium hover:text-orange-700">
+                      View Details →
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+
+            {loading && orders.length > 0 && (
+              <div className="text-center py-4">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+              </div>
+            )}
+
+            <div ref={observerTarget} className="h-4" />
+
+            {!hasMore && orders.length > 0 && (
+              <div className="text-center py-4 text-gray-500 text-sm">
+                No more orders to load
+              </div>
+            )}
+          </div>
         )}
       </div>
-
-      {/* Order Details Modal */}
-      <OrderDetailsModal
-        order={selectedOrder}
-        isOpen={showOrderDetails}
-        onClose={() => setShowOrderDetails(false)}
-        onReorder={handleReorder}
-      />
     </div>
   );
 };

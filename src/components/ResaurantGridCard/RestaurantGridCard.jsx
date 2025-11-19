@@ -4,6 +4,7 @@ const RestaurantGridCard = ({
   id,
   name,
   main_image_url,
+  image_url,
   cuisine_type,
   top_dishes,
   avg_rating,
@@ -19,13 +20,13 @@ const RestaurantGridCard = ({
       {/* Image */}
       <div className="relative">
         <img
-          src={main_image_url}
+          src={main_image_url || image_url || 'https://via.placeholder.com/300x200?text=Restaurant'}
           alt={name}
           className="w-full h-36 object-cover"
         />
         <div className="absolute top-2 right-2 bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-md flex items-center gap-1">
           <Star size={14} className="fill-green-600 text-green-600" />
-          {avg_rating?.toFixed(1)}
+          {avg_rating?.toFixed(1) || '4.0'}
         </div>
       </div>
 
@@ -39,11 +40,11 @@ const RestaurantGridCard = ({
         {/* Cuisine + Top Dishes */}
         <p className="text-xs text-gray-700 leading-tight">
           <span className="inline-block bg-indigo-50 text-indigo-600 font-semibold px-2 py-0.5 rounded-full text-[10px] mb-1">
-            {cuisine_type}
+            {cuisine_type || 'Multi-Cuisine'}
           </span>
           <br />
           <span className="font-medium text-gray-800">Top Dishes:</span>{" "}
-          {top_dishes}
+          {top_dishes || 'Various dishes available'}
         </p>
 
         {/* Address */}
@@ -55,7 +56,7 @@ const RestaurantGridCard = ({
         {/* Timing */}
         <p className="text-[11px] text-gray-500">
           <span className="font-medium">Timings:</span>{" "}
-          {opening_time?.slice(0, 5)} - {closing_time?.slice(0, 5)}
+          {opening_time?.slice(0, 5) || '09:00'} - {closing_time?.slice(0, 5) || '22:00'}
         </p>
       </div>
     </div>

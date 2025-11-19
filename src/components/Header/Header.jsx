@@ -43,7 +43,11 @@ export default function Header() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex gap-6 text-sm font-medium items-center">
-          <a href="#" className="hover:text-orange-500 transition">Bulk Order</a>
+          {isAuthenticated && (
+            <Link to="/order-history" className="hover:text-orange-500 transition">
+              My Orders
+            </Link>
+          )}
           <a href="#" className="hover:text-orange-500 transition">Partner with Us</a>
           {isAuthenticated ? (
             <>
@@ -73,12 +77,7 @@ export default function Header() {
 
         {/* Mobile CTA + Menu */}
         <div className="flex items-center md:hidden gap-2 sm:gap-4">
-          <a
-            href="#"
-            className="text-xs sm:text-sm text-white bg-orange-500 px-2 sm:px-3 py-1.5 rounded-lg font-medium shadow-sm hover:bg-orange-600 transition whitespace-nowrap"
-          >
-            Bulk Order
-          </a>
+          
           <button onClick={() => setMenuOpen(!menuOpen)} className="p-1">
             {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -93,6 +92,15 @@ export default function Header() {
       {/* Mobile Dropdown */}
       {menuOpen && (
         <div className="sm:hidden border-t border-gray-200 bg-white px-4 py-3 flex flex-col gap-4">
+          {isAuthenticated && (
+            <Link 
+              to="/order-history" 
+              className="hover:text-orange-500 transition"
+              onClick={() => setMenuOpen(false)}
+            >
+              My Orders
+            </Link>
+          )}
           <a href="#" className="hover:text-orange-500 transition">Partner with Us</a>
           {isAuthenticated ? (
             <>

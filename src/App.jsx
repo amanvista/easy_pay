@@ -91,7 +91,7 @@ const App = () => {
                 }
               />
               <Route
-                path="/order-tracking"
+                path="/order-tracking/:orderId"
                 element={
                   <ProtectedRoute>
                     <OrderTrackingPage />
@@ -134,7 +134,7 @@ const App = () => {
           </Routes>
         </BrowserRouter>
         <ToastContainer
-          position="top-right"
+          position="top-center"
           autoClose={3000}
           hideProgressBar={false}
           newestOnTop={false}
