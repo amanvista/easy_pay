@@ -54,7 +54,26 @@ const MenuPage = () => {
         );
         const newMenus = response.data.menus || [];
 
-        setMenus((prev) => [...prev, ...newMenus]);
+        // Sort items by position within each category
+        const sortedMenus = newMenus.map(menu => ({
+          ...menu,
+          categories: menu.categories?.map(category => ({
+            ...category,
+            items: category.items?.sort((a, b) => {
+              // Sort by position, if position is same or undefined, maintain original order
+              const posA = a.position ?? Number.MAX_SAFE_INTEGER;
+              const posB = b.position ?? Number.MAX_SAFE_INTEGER;
+              return posA - posB;
+            })
+          }))
+        }));
+
+        setMenus((prev) => {
+          // Prevent duplicates by checking if menu already exists
+          const existingIds = new Set(prev.map(m => m.id));
+          const uniqueNewMenus = sortedMenus.filter(m => !existingIds.has(m.id));
+          return [...prev, ...uniqueNewMenus];
+        });
         setHasMore(page < response.data.totalPages);
       } catch (error) {
         console.error("Error fetching menus:", error);
@@ -64,7 +83,7 @@ const MenuPage = () => {
     };
 
     fetchMenus();
-  }, [id, page]);
+  }, [id, page, loading, hasMore]);
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
