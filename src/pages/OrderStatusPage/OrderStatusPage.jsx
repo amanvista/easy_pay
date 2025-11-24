@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import './orderStatus.css';
 
 const OrderStatusPage = () => {
   const location = useLocation();
@@ -48,114 +47,114 @@ const OrderStatusPage = () => {
   };
 
   return (
-    <div className="order-status-container">
-      <div className="order-header">
-        <h2>Order #{orderId}</h2>
-        <p className="time-elapsed">Time elapsed: {formatTime(timeElapsed)}</p>
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="bg-white border-b border-gray-200 p-4">
+        <h2 className="text-xl font-bold text-gray-800">Order {orderId}</h2>
+        <p className="text-sm text-gray-600">Time elapsed: {formatTime(timeElapsed)}</p>
       </div>
 
-      <div className="order-content">
-        <div className="order-details">
-          <div className="customer-info">
-            <h3>Customer Information</h3>
-            <div className="info-grid">
-              <div className="info-item">
-                <span className="info-label">Name:</span>
-                <span className="info-value">{customerInfo.name || 'Not provided'}</span>
+      <div className="max-w-4xl mx-auto p-4 space-y-4">
+        <div className="bg-white rounded-lg shadow-sm p-4">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">Customer Information</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Name:</span>
+                <span className="font-medium text-gray-900">{customerInfo.name || 'Not provided'}</span>
               </div>
-              <div className="info-item">
-                <span className="info-label">Phone:</span>
-                <span className="info-value">{customerInfo.phone || 'Not provided'}</span>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Phone:</span>
+                <span className="font-medium text-gray-900">{customerInfo.phone || 'Not provided'}</span>
               </div>
             </div>
           </div>
 
-          <div className="order-items">
-            <h3>Your Order</h3>
-            <ul className="items-list">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">Your Order</h3>
+            <ul className="space-y-3">
               {cart.map(item => (
-                <li key={item.id} className="order-item">
-                  <div className="item-detail">
-                    <span className="item-name">{item.name}</span>
-                    <span className="item-quantity">× {item.quantity}</span>
+                <li key={item.id} className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-900">{item.name}</span>
+                    <span className="text-xs text-gray-500">× {item.quantity}</span>
                   </div>
-                  <div className="item-price">₹{(item.price * item.quantity).toFixed(2)}</div>
+                  <div className="text-sm font-semibold text-gray-900">₹{(item.price * item.quantity).toFixed(2)}</div>
                 </li>
               ))}
             </ul>
-            <div className="order-total">
-              <span>Total:</span>
-              <span>₹{orderTotal.toFixed(2)}</span>
+            <div className="flex justify-between items-center pt-3 mt-3 border-t-2 border-gray-200">
+              <span className="text-base font-bold text-gray-900">Total:</span>
+              <span className="text-base font-bold text-gray-900">₹{orderTotal.toFixed(2)}</span>
             </div>
           </div>
         </div>
 
-        <div className="status-section">
-          <h3>Order Status</h3>
-          <div className="status-timeline">
-            <div className={`status-item ${orderStatus.paymentVerified ? 'completed' : ''}`}>
-              <div className="status-icon">
+        <div className="bg-white rounded-lg shadow-sm p-4">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Order Status</h3>
+          <div className="space-y-4">
+            <div className={`flex items-start gap-3 ${orderStatus.paymentVerified ? 'opacity-100' : 'opacity-50'}`}>
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${orderStatus.paymentVerified ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'}`}>
                 {orderStatus.paymentVerified ? '✓' : '1'}
               </div>
-              <div className="status-details">
-                <h4>Payment Verified</h4>
-                <p>Your payment has been confirmed</p>
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900">Payment Verified</h4>
+                <p className="text-xs text-gray-600">Your payment has been confirmed</p>
               </div>
             </div>
 
-            <div className={`status-item ${orderStatus.preparing ? 'completed' : ''}`}>
-              <div className="status-icon">
+            <div className={`flex items-start gap-3 ${orderStatus.preparing ? 'opacity-100' : 'opacity-50'}`}>
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${orderStatus.preparing ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'}`}>
                 {orderStatus.preparing ? '✓' : '2'}
               </div>
-              <div className="status-details">
-                <h4>Preparing Your Order</h4>
-                <p>Chef has started cooking</p>
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900">Preparing Your Order</h4>
+                <p className="text-xs text-gray-600">Chef has started cooking</p>
               </div>
             </div>
 
-            <div className={`status-item ${orderStatus.prepared ? 'completed' : ''}`}>
-              <div className="status-icon">
+            <div className={`flex items-start gap-3 ${orderStatus.prepared ? 'opacity-100' : 'opacity-50'}`}>
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${orderStatus.prepared ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'}`}>
                 {orderStatus.prepared ? '✓' : '3'}
               </div>
-              <div className="status-details">
-                <h4>Order Prepared</h4>
-                <p>Your food is ready for packing</p>
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900">Order Prepared</h4>
+                <p className="text-xs text-gray-600">Your food is ready for packing</p>
               </div>
             </div>
 
-            <div className={`status-item ${orderStatus.packed ? 'completed' : ''}`}>
-              <div className="status-icon">
+            <div className={`flex items-start gap-3 ${orderStatus.packed ? 'opacity-100' : 'opacity-50'}`}>
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${orderStatus.packed ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'}`}>
                 {orderStatus.packed ? '✓' : '4'}
               </div>
-              <div className="status-details">
-                <h4>Order Packed</h4>
-                <p>Your items have been packed</p>
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900">Order Packed</h4>
+                <p className="text-xs text-gray-600">Your items have been packed</p>
               </div>
             </div>
 
-            <div className={`status-item ${orderStatus.readyForPickup ? 'completed' : ''}`}>
-              <div className="status-icon">
+            <div className={`flex items-start gap-3 ${orderStatus.readyForPickup ? 'opacity-100' : 'opacity-50'}`}>
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${orderStatus.readyForPickup ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'}`}>
                 {orderStatus.readyForPickup ? '✓' : '5'}
               </div>
-              <div className="status-details">
-                <h4>Ready for Pickup</h4>
-                <p>Your order is waiting at the counter</p>
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900">Ready for Pickup</h4>
+                <p className="text-xs text-gray-600">Your order is waiting at the counter</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="action-buttons">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex gap-3">
         <button 
           onClick={() => navigate('/')}
-          className="back-to-home"
+          className="flex-1 bg-gray-100 text-gray-800 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition"
         >
           Back to Home
         </button>
         <button 
           onClick={() => window.print()}
-          className="print-receipt"
+          className="flex-1 bg-orange-500 text-white px-4 py-3 rounded-lg font-medium hover:bg-orange-600 transition"
         >
           Print Receipt
         </button>

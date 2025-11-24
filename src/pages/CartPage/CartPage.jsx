@@ -2,15 +2,18 @@
 import { ChevronLeft } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { incrementItem, decrementItem } from "../../app/slices/cartSlice"; // you need to implement these
+import { incrementItem, decrementItem, clearCart } from "../../app/slices/cartSlice";
 import { useState } from "react";
+import orderService from "../../services/orderService";
+import { toast } from "react-toastify";
+import useCashfreeCheckout from "./useCashfreeCheckout";
 
 const CartPage = () => {
-  const [orderType, setOrderType] = useState("dinein");
-  const [tableNumber, setTableNumber] = useState("");
-
-  // Time Slot State
-  const [orderTime, setOrderTime] = useState("asap");
+  const { startCheckout } = useCashfreeCheckout({ mode: "sandbox" });
+  const [orderType, setOrderType] = useState("delivery");
+  const [deliveryPartner, setDeliveryPartner] = useState("porter");
+  const [instructions, setInstructions] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -21,11 +24,11 @@ const CartPage = () => {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const savings = Math.round(0.3 * totalMRP);
 
   const platformFee = 10;
+  const deliveryCharge = orderType === "delivery" ? 40 : 0;
   const gst = Math.round(0.05 * totalMRP);
-  const totalPay = totalMRP + platformFee + gst - savings;
+  const totalPay = totalMRP + platformFee + deliveryCharge + gst;
   const maxEta =
     cartItems.length > 0
       ? Math.max(
@@ -36,19 +39,54 @@ const CartPage = () => {
       : 0;
 
   const handleBack = () => navigate(-1);
-  const generateTimeSlots = () => {
-    const slots = [];
-    const now = new Date();
-    now.setMinutes(Math.ceil(now.getMinutes() / 15) * 15); // round to next 15 mins
 
-    for (let i = 0; i < 12; i++) {
-      const slot = new Date(now.getTime() + i * 15 * 60000);
-      const hours = slot.getHours().toString().padStart(2, "0");
-      const minutes = slot.getMinutes().toString().padStart(2, "0");
-      slots.push(`${hours}:${minutes}`);
+  const handlePayment = async () => {
+    if (isProcessing) return;
+
+    setIsProcessing(true);
+    try {
+      // Prepare order data
+      const orderData = {
+        restaurant_id: restaurant?.id,
+        total_amount: totalMRP,
+        tax_amount: gst,
+        discount_amount: 0,
+        payment_method: "ONLINE",
+        payment_status_id: 1, // Paid
+        order_status_id: 1, // Pending/Confirmed
+        delivery_type: orderType,
+        delivery_partner: orderType === "delivery" ? deliveryPartner : null,
+        special_instructions: instructions || null,
+        items: cartItems.map((item) => ({
+          menu_item_id: item.id,
+          name: item.name,
+          image: item.featured_image_url || item.image_url,
+          quantity: item.quantity,
+          price: parseFloat(item.price),
+        })),
+      };
+
+      console.log("📤 Sending order data:", JSON.stringify(orderData, null, 2));
+
+      // Create order
+      const response = await orderService.createOrder(orderData);
+      
+      // Clear cart
+      dispatch(clearCart());
+      
+      // Show success message
+      toast.success("Order placed successfully!");
+      
+      // Navigate to success page
+      navigate("/payment-success", {
+        state: { orderDetails: response.data || response },
+      });
+    } catch (error) {
+      console.error("Error creating order:", error);
+      toast.error(error.message || "Failed to place order. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
-
-    return slots;
   };
 
   if (cartItems.length === 0) {
@@ -100,85 +138,6 @@ const CartPage = () => {
             ⏱ {maxEta} min
           </p>
         </div>
-      </div>
-
-      {/* Savings Banner */}
-      {savings > 0 && (
-        <div className="bg-green-100 text-green-800 p-3 mx-4 mt-4 rounded-lg text-sm font-medium">
-          🎉 You’re saving ₹{savings} on this order!
-        </div>
-      )}
-
-      {/* Order Type Selection */}
-      <div className="px-4 mt-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Order Type
-        </label>
-        <div className="flex gap-4">
-          {["dinein", "takeaway"].map((type) => (
-            <button
-              key={type}
-              onClick={() => setOrderType(type)}
-              className={`px-4 py-2 rounded-xl border ${
-                orderType === type
-                  ? "bg-orange-500 text-white border-orange-500"
-                  : "bg-white text-gray-700 border-gray-300"
-              }`}
-            >
-              {type === "dinein" ? "Dine-in" : "Takeaway"}
-            </button>
-          ))}
-        </div>
-
-        {/* Table Number Input for Dine-in */}
-        {orderType === "dinein" && (
-          <input
-            type="text"
-            value={tableNumber}
-            onChange={(e) => setTableNumber(e.target.value)}
-            placeholder="Enter Table Number"
-            className="mt-3 w-full p-3 border rounded-xl text-sm bg-gray-50"
-          />
-        )}
-      </div>
-
-      {/* Time Slot Selection */}
-      <div className="px-4 mt-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          When do you want your order?
-        </label>
-        <div className="flex gap-4 mb-3">
-          {["asap", "custom"].map((t) => (
-            <button
-              key={t}
-              onClick={() => setOrderTime(t)}
-              className={`px-4 py-2 rounded-xl border ${
-                orderTime === t
-                  ? "bg-orange-500 text-white border-orange-500"
-                  : "bg-white text-gray-700 border-gray-300"
-              }`}
-            >
-              {t === "asap" ? "ASAP" : "Choose Time"}
-            </button>
-          ))}
-        </div>
-
-        {/* Time Selector if Custom Selected */}
-        {orderTime === "custom" && (
-          <select
-            className="w-full p-3 border rounded-xl text-sm bg-gray-50"
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Select a time slot
-            </option>
-            {generateTimeSlots().map((slot) => (
-              <option key={slot} value={slot}>
-                {slot}
-              </option>
-            ))}
-          </select>
-        )}
       </div>
 
       {/* Cart Items */}
@@ -242,35 +201,94 @@ const CartPage = () => {
       </div>
 
       {/* Restaurant Note */}
-      <div className="px-4 mt-2">
+      <div className="px-4 mt-4">
         <label className="block text-sm text-gray-600 mb-1">
           Add Instructions for the Restaurant
         </label>
         <input
           type="text"
           placeholder="E.g. Less spicy"
+          value={instructions}
+          onChange={(e) => setInstructions(e.target.value)}
           className="w-full p-3 border rounded-xl text-sm bg-gray-50"
         />
       </div>
 
-      {/* Apply Coupon */}
-      <div className="mx-4 mt-6 p-4 bg-orange-50 border border-orange-200 rounded-xl flex items-center justify-between">
-        <div>
-          <p className="text-sm font-semibold text-orange-800">Apply Coupon</p>
-          <p className="text-xs text-orange-700">
-            Unlock offers and get instant discounts
-          </p>
+      {/* Order Type Selection */}
+      <div className="px-4 mt-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Order Type
+        </label>
+        <div className="flex gap-4 mb-4">
+          {[
+            { value: "delivery", label: "Delivery" },
+            { value: "takeaway", label: "Eat Right Now" },
+          ].map((type) => (
+            <button
+              key={type.value}
+              onClick={() => setOrderType(type.value)}
+              className={`flex-1 px-4 py-3 rounded-xl border font-medium transition ${
+                orderType === type.value
+                  ? "bg-orange-500 text-white border-orange-500"
+                  : "bg-white text-gray-700 border-gray-300 hover:border-orange-300"
+              }`}
+            >
+              {type.label}
+            </button>
+          ))}
         </div>
-        <button
-          onClick={() => navigate("/apply-coupon")}
-          className="text-sm font-medium text-orange-600 underline hover:text-orange-700 transition"
-        >
-          Apply
-        </button>
+
+        {/* Delivery Partner Selection */}
+        {orderType === "delivery" && (
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Delivery Partner
+            </label>
+            <div className="space-y-3">
+              <div
+                onClick={() => setDeliveryPartner("porter")}
+                className={`p-4 rounded-xl border cursor-pointer transition ${
+                  deliveryPartner === "porter"
+                    ? "border-orange-500 bg-orange-50"
+                    : "border-gray-300 bg-white hover:border-orange-300"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        deliveryPartner === "porter"
+                          ? "border-orange-500"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {deliveryPartner === "porter" && (
+                        <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Porter</p>
+                      <p className="text-xs text-gray-600">
+                        Estimated delivery: 30-40 mins
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-gray-900">₹40</p>
+                    <p className="text-xs text-gray-500">Delivery charge</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bill Details */}
-      <div className="mx-4 my-6 border-t pt-4 space-y-2 text-sm text-gray-700">
+      <div
+        className="mx-4 my-6 border-t pt-4 space-y-2 text-sm text-gray-700"
+        id="bill_details"
+      >
         <div className="flex justify-between">
           <span>Item Total</span>
           <span>₹{totalMRP}</span>
@@ -279,10 +297,12 @@ const CartPage = () => {
           <span>Platform Fee</span>
           <span>₹{platformFee}</span>
         </div>
-        <div className="flex justify-between text-green-600 font-medium">
-          <span>Discount</span>
-          <span>-₹{savings}</span>
-        </div>
+        {orderType === "delivery" && (
+          <div className="flex justify-between">
+            <span>Delivery Charge</span>
+            <span>₹{deliveryCharge}</span>
+          </div>
+        )}
         <div className="flex justify-between">
           <span>GST & Other</span>
           <span>₹{gst}</span>
@@ -320,7 +340,7 @@ const CartPage = () => {
           <button
             className="text-xs underline text-orange-500"
             onClick={() => {
-              const el = document.querySelector("#bill-details");
+              const el = document.querySelector("#bill_details");
               if (el) el.scrollIntoView({ behavior: "smooth" });
             }}
           >
@@ -328,10 +348,11 @@ const CartPage = () => {
           </button>
         </div>
         <button
-          onClick={() => navigate("/payment")}
-          className="bg-orange-500 text-white px-5 py-2 rounded-xl font-medium hover:bg-orange-600 transition-all"
+          onClick={handlePayment}
+          disabled={isProcessing}
+          className="bg-green-600 text-white px-5 py-2 rounded-xl font-medium hover:bg-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Make Payment
+          {isProcessing ? "Processing..." : "Make Payment"}
         </button>
       </div>
     </div>

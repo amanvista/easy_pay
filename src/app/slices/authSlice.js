@@ -1,14 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import authApi from '../../services/authApi';
+import authApi from '../../services/authService';
 
-// Async thunk for login using authApi
+// Async thunk for login using authApi (supports email/password)
 export const loginUser = createAsyncThunk(
   'auth/login',
-  async ({ phone, password }, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await authApi.login(phone, password);
-      // Store token in local storage
-      localStorage.setItem('userToken', response.token);
+      const response = await authApi.login(email, password);
+      // Store token in local storage (use 'token' key to match interceptor)
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('userToken', response.token); // Keep for backward compatibility
       return response;
     } catch (error) {
       // Log the full response for debugging
@@ -27,6 +28,7 @@ export const loginUser = createAsyncThunk(
 
 // Async thunk for logout
 export const logoutUser = createAsyncThunk('auth/logout', async () => {
+  localStorage.removeItem('token');
   localStorage.removeItem('userToken');
 });
 
@@ -35,7 +37,8 @@ export const checkAuth = createAsyncThunk('auth/checkAuth', async () => {
   const token = localStorage.getItem('userToken');
   if (token) {
     try {
-      const userInfo = await authApi.getProfile(token);
+      // Token is automatically added by the interceptor in createApi
+      const userInfo = await authApi.getProfile();
       return userInfo;
     } catch (error) {
       localStorage.removeItem('userToken');
@@ -45,10 +48,12 @@ export const checkAuth = createAsyncThunk('auth/checkAuth', async () => {
   throw new Error('No token found');
 });
 
+// Initialize state - check localStorage but set loading true if token exists
+const token = localStorage.getItem('userToken');
 const initialState = {
-  loading: false,
+  loading: token ? true : false, // Set loading true if token exists (will be verified by AuthInitializer)
   userInfo: null,
-  userToken: localStorage.getItem('userToken') || null,
+  userToken: token || null, // Initialize from localStorage to prevent flash
   error: null,
   success: false,
 };

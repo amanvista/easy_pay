@@ -1,29 +1,31 @@
 import { MapPin, Search as SearchIcon, Navigation } from "lucide-react";
-import CitySelector from "./CitySelector";
-import useLocation from "../../app/hooks/useLocation";
-import ZoneSelector from "./ZoneSelector";
 
 const SearchBar = ({ location, setLocation, region, setRegion, search, setSearch }) => {
   const locations = ["Delhi", "Mumbai", "Bangalore", "Hyderabad", "Chennai", "Pune"];
   const regions = ["North", "South", "East", "West"];
-  const { cityId, cityName, zoneId, zoneName, setCity, setZone} = useLocation();
 
   return (
     <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-center">
-      <CitySelector 
-          selectedCity={cityId}
-          onChange={(id, name) => {
-            setCity(id,name);
+      
+      {/* City Dropdown */}
+      <div className="relative w-full md:w-1/4">
+        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-500" size={20} />
+        <select
+          value={location}
+          onChange={(e) => {
+            setLocation(e.target.value);
+            setRegion(""); // reset region when city changes
           }}
-      />
-      <ZoneSelector
-            selectedCity={cityId}
-            selectedZone={zoneId}
-            onChange={(id, name) => {
-              setZone(id,name);
-              console.log(zoneName)
-            }}
-        /> 
+          className="appearance-none pl-12 pr-4 py-3 rounded-xl w-full bg-white/80 border border-gray-200 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
+        >
+          <option value="" disabled>Select your city</option>
+          {locations.map((loc) => (
+            <option key={loc} value={loc}>
+              {loc}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {/* Region Dropdown (visible only after city is selected) */}
       {location && (

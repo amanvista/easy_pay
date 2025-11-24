@@ -5,6 +5,7 @@ const RestaurantCard = ({
   id,
   name,
   main_image_url,
+  image_url,
   cuisine_type,
   address,
   avg_rating,
@@ -21,7 +22,7 @@ const RestaurantCard = ({
     >
       {/* Image */}
       <img
-        src={`http://localhost/images/food/restaurant/${main_image_url}`}
+        src={main_image_url || image_url || 'https://via.placeholder.com/300x200?text=Restaurant'}
         alt={`${name} image`}
         className="h-40 w-full object-cover"
       />
@@ -30,7 +31,7 @@ const RestaurantCard = ({
       <div className="p-4 flex flex-col justify-between h-full space-y-2">
         {/* Tag */}
         <span className="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-2 py-0.5 rounded-full tracking-widest mb-1 w-fit">
-          {cuisine_type}
+          {cuisine_type || 'Multi-Cuisine'}
         </span>
 
         {/* Name & Rating */}
@@ -38,13 +39,13 @@ const RestaurantCard = ({
           <h4 className="font-semibold text-lg text-gray-900">{name}</h4>
           <div className="flex items-center gap-1 text-sm text-green-800 font-medium">
             <Star size={16} className="fill-green-700 text-green-800" />
-            {parseInt(avg_rating)?.toFixed(1)}
+            {avg_rating?.toFixed(1) || '4.0'}
           </div>
         </div>
 
         {/* Top Dishes */}
         <p className="text-xs text-gray-700">
-          <span className="font-semibold">Top Dishes:</span> {top_dishes}
+          <span className="font-semibold">Top Dishes:</span> {top_dishes || 'Various dishes available'}
         </p>
 
         {/* Address */}
@@ -52,7 +53,7 @@ const RestaurantCard = ({
 
         {/* Timings at Bottom Left */}
         <p className="text-xs text-gray-500 mt-2">
-          Timings: {opening_time?.slice(0, 5)} - {closing_time?.slice(0, 5)}
+          Timings: {opening_time?.slice(0, 5) || '09:00'} - {closing_time?.slice(0, 5) || '22:00'}
         </p>
       </div>
     </div>

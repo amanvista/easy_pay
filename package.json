@@ -11,10 +11,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@react-google-maps/api": "^2.20.7",
+    "@cashfreepayments/cashfree-js": "^1.0.5",
+    "@react-google-maps/api": "^2.20.3",
     "@reduxjs/toolkit": "^2.6.1",
     "@tailwindcss/vite": "^4.1.5",
     "axios": "^1.8.4",
+    "framer-motion": "^12.23.24",
     "lucide-react": "^0.503.0",
     "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
@@ -23,6 +25,8 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.5.0",
     "react-toastify": "^11.0.5",
+    "react-window": "^2.2.3",
+    "react-window-infinite-loader": "^2.0.0",
     "tailwindcss": "^4.1.5"
   },
   "devDependencies": {

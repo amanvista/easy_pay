@@ -6,13 +6,13 @@ export const useAuth = () => {
   const dispatch = useDispatch();
   const authState = useSelector((state) => state.auth);
 
-  // Wrapper for login API call
-  const login = useCallback(async (phone, password) => {
+  // Wrapper for login API call (supports email/password)
+  const login = useCallback(async (email, password) => {
     try {
-      await dispatch(loginUser({ phone, password })).unwrap();
+      await dispatch(loginUser({ email, password })).unwrap();
       return { success: true };
     } catch (error) {
-      return { success: false, error };
+      return { success: false, error: error || 'Login failed. Please check your credentials.' };
     }
   }, [dispatch]);
 
