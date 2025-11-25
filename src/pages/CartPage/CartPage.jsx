@@ -6,10 +6,9 @@ import { incrementItem, decrementItem, clearCart } from "../../app/slices/cartSl
 import { useState } from "react";
 import orderService from "../../services/orderService";
 import { toast } from "react-toastify";
-import useCashfreeCheckout from "./useCashfreeCheckout";
+import paymentService from "../../services/paymentService";
 
 const CartPage = () => {
-  const { startCheckout } = useCashfreeCheckout({ mode: "sandbox" });
   const [orderType, setOrderType] = useState("delivery");
   const [deliveryPartner, setDeliveryPartner] = useState("porter");
   const [instructions, setInstructions] = useState("");
@@ -19,6 +18,7 @@ const CartPage = () => {
 
   const cartItems = useSelector((state) => state.cart.items);
   const restaurant = useSelector((state) => state.cart.restaurant);
+  const user = useSelector((state) => state.auth.userInfo);
 
   const totalMRP = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -43,16 +43,56 @@ const CartPage = () => {
   const handlePayment = async () => {
     if (isProcessing) return;
 
+    if (!user) {
+      toast.error("Please login to continue");
+      navigate("/login");
+      return;
+    }
+
     setIsProcessing(true);
     try {
-      // Prepare order data
+      // Step 1: Create payment session with Cashfree
+      const orderId = `order_${Date.now()}`;
+      const paymentData = {
+        restaurant_id: restaurant?.id,
+        order_amount: totalPay,
+        order_currency: "INR",
+        order_id: orderId,
+        customer_details: {
+          customer_id: String(user.id || user.user_id),
+          customer_phone: user.phone || "9999999999"
+        },
+        order_meta: {
+          return_url: `${window.location.origin}/order-tracking/${orderId}?payment=success`
+        }
+      };
+
+      console.log("💳 Creating payment session:", JSON.stringify(paymentData, null, 2));
+
+      const paymentResponse = await paymentService.createPaymentOrder(paymentData);
+
+      console.log("✅ Payment response:", JSON.stringify(paymentResponse, null, 2));
+
+      if (!paymentResponse.success) {
+        throw new Error(paymentResponse.message || "Failed to create payment session");
+      }
+
+      // Extract payment session ID
+      const paymentSessionId = paymentResponse.data?.payment_session_id;
+      console.log("🔑 Payment Session ID:", paymentSessionId);
+
+      if (!paymentSessionId) {
+        throw new Error("Payment session ID not found in response");
+      }
+
+      // Step 2: Prepare order data for after payment
       const orderData = {
         restaurant_id: restaurant?.id,
         total_amount: totalMRP,
         tax_amount: gst,
         discount_amount: 0,
         payment_method: "ONLINE",
-        payment_status_id: 1, // Paid
+        payment_status_id: 2, // Pending payment
         order_status_id: 1, // Pending/Confirmed
         delivery_type: orderType,
         delivery_partner: orderType === "delivery" ? deliveryPartner : null,
@@ -66,24 +106,43 @@ const CartPage = () => {
         })),
       };
 
-      console.log("📤 Sending order data:", JSON.stringify(orderData, null, 2));
+      // Store order data in session storage for after payment
+      sessionStorage.setItem('pendingOrder', JSON.stringify(orderData));
+      sessionStorage.setItem('paymentSessionId', paymentSessionId);
 
-      // Create order
-      const response = await orderService.createOrder(orderData);
-      
-      // Clear cart
-      dispatch(clearCart());
-      
-      // Show success message
-      toast.success("Order placed successfully!");
-      
-      // Navigate to success page
-      navigate("/payment-success", {
-        state: { orderDetails: response.data || response },
-      });
+      // Navigate to checkout page
+      navigate('/checkout');
+
+      // Step 3: Initiate Cashfree payment
+      await paymentService.initiateCashfreePayment(
+        paymentResponse.data,
+        // Success callback
+        async (paymentDetails) => {
+          console.log("✅ Payment successful:", paymentDetails);
+          
+          try {
+            // Create order after successful payment
+            const orderResponse = await orderService.createOrder(orderData);
+            dispatch(clearCart());
+            toast.success("Payment successful!");
+            navigate("/payment-success", {
+              state: { orderDetails: orderResponse.data || orderResponse }
+            });
+          } catch (error) {
+            console.error("Error creating order after payment:", error);
+            toast.error("Payment successful but order creation failed. Please contact support.");
+          }
+        },
+        // Failure callback
+        (error) => {
+          console.error("❌ Payment failed:", error);
+          toast.error("Payment failed. Please try again.");
+        }
+      );
+
     } catch (error) {
-      console.error("Error creating order:", error);
-      toast.error(error.message || "Failed to place order. Please try again.");
+      console.error("❌ Error in payment flow:", error);
+      toast.error(error.message || "Failed to process payment. Please try again.");
     } finally {
       setIsProcessing(false);
     }

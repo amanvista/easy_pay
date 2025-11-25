@@ -1,6 +1,6 @@
-import createApi from './createApi';
+import { orderApi } from './createApi';
 
-const api = createApi();
+const api = orderApi;
 
 const paymentService = {
 
@@ -88,7 +88,7 @@ const paymentService = {
       // Configure checkout options
       const checkoutOptions = {
         paymentSessionId: paymentSessionId,
-        returnUrl: `${window.location.origin}/order-tracking?order_id=${orderId}`,
+        returnUrl: `${window.location.origin}/order-tracking/${orderId}?payment=success`,
       };
 
       // Open payment modal

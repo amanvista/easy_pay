@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { 
@@ -21,10 +21,15 @@ import orderService from '../../services/orderService';
 const OrderTrackingPage = () => {
   const navigate = useNavigate();
   const { orderId } = useParams();
+  const [searchParams] = useSearchParams();
   const [orderData, setOrderData] = useState(null);
   const [showDeliveredModal, setShowDeliveredModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const hasShownModalRef = useRef(false);
+  
+  // Check if redirected from payment
+  const paymentStatus = searchParams.get('payment');
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(paymentStatus === 'success');
 
   // Fetch order data from API and poll for updates
   useEffect(() => {
@@ -199,6 +204,39 @@ const OrderTrackingPage = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Payment Success Banner */}
+        {showPaymentSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg shadow-sm"
+          >
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-3 flex-1">
+                <h3 className="text-sm font-semibold text-green-800">
+                  Payment Successful!
+                </h3>
+                <p className="text-sm text-green-700 mt-1">
+                  Your payment has been processed successfully. Track your order status below.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowPaymentSuccess(false)}
+                className="ml-auto flex-shrink-0 text-green-500 hover:text-green-700 transition"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </motion.div>
+        )}
+
         {/* Order Header */}
         <OrderHeader orderData={orderData} />
 

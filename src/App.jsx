@@ -19,6 +19,7 @@ import OrderHistoryPage from "./pages/OrderHistoryPage/OrderHistoryPage";
 import OrderTrackingPage from "./pages/OrderTrackingPage/OrderTrackingPage";
 import OrderStatusPage from "./pages/OrderStatusPage/OrderStatusPage";
 import AddAddressPage from "./pages/AddAddressPage/AddAddressPage";
+import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AuthInitializer from "./components/AuthInitializer/AuthInitializer";
 import {
@@ -134,6 +135,14 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <AddAddressPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/checkout"
+                element={
+                  <ProtectedRoute>
+                    <CheckoutPage />
                   </ProtectedRoute>
                 }
               />

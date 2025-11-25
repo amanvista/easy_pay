@@ -1,18 +1,25 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 const OrderStatusPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { orderId, cart = [], customerInfo = {} } = location.state || {};
+  const [searchParams] = useSearchParams();
+  const { orderId: stateOrderId, cart = [], customerInfo = {} } = location.state || {};
+  
+  // Get order ID from URL params or state
+  const orderId = searchParams.get('order_id') || stateOrderId;
+  const paymentStatus = searchParams.get('payment');
+  
   const [orderStatus, setOrderStatus] = useState({
-    paymentVerified: false,
+    paymentVerified: paymentStatus === 'success',
     preparing: false,
     prepared: false,
     packed: false,
     readyForPickup: false
   });
   const [timeElapsed, setTimeElapsed] = useState(0);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(paymentStatus === 'success');
 
   // Calculate order total
   const orderTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -52,6 +59,37 @@ const OrderStatusPage = () => {
         <h2 className="text-xl font-bold text-gray-800">Order {orderId}</h2>
         <p className="text-sm text-gray-600">Time elapsed: {formatTime(timeElapsed)}</p>
       </div>
+
+      {/* Payment Success Banner */}
+      {showPaymentSuccess && (
+        <div className="max-w-4xl mx-auto p-4">
+          <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg shadow-sm">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-semibold text-green-800">
+                  Payment Successful!
+                </h3>
+                <p className="text-sm text-green-700 mt-1">
+                  Your payment has been processed successfully. Your order is now being prepared.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowPaymentSuccess(false)}
+                className="ml-auto flex-shrink-0 text-green-500 hover:text-green-700"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-4xl mx-auto p-4 space-y-4">
         <div className="bg-white rounded-lg shadow-sm p-4">
