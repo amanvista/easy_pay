@@ -20,6 +20,8 @@ import OrderTrackingPage from "./pages/OrderTrackingPage/OrderTrackingPage";
 import OrderStatusPage from "./pages/OrderStatusPage/OrderStatusPage";
 import AddAddressPage from "./pages/AddAddressPage/AddAddressPage";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import SearchPage from "./pages/SearchPage/SearchPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AuthInitializer from "./components/AuthInitializer/AuthInitializer";
 import {
@@ -39,25 +41,14 @@ const App = () => {
             {/* Auth routes without MainLayout (no header) - Public */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            
-            {/* All other routes with MainLayout require authentication */}
+            {/* All other routes with MainLayout */}
             <Route path="/" element={<MainLayout />}>
-              <Route
-                index
-                element={
-                  <ProtectedRoute>
-                    <Home />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/menu/:id"
-                element={
-                  <ProtectedRoute>
-                    <MenuPage />
-                  </ProtectedRoute>
-                }
-              />
+              {/* Public Routes - No authentication required */}
+              <Route index element={<Home />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/menu/:id" element={<MenuPage />} />
+              
+              {/* Protected Routes - Authentication required */}
               <Route
                 path="/cart"
                 element={
@@ -143,6 +134,22 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <CheckoutPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/cart"
+                element={
+                  <ProtectedRoute>
+                    <CartPage />
                   </ProtectedRoute>
                 }
               />

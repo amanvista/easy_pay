@@ -103,6 +103,24 @@ const restaurantService = {
   },
 
   /**
+   * Search restaurants and menu items by query string (paginated)
+   * @param {string} query - Search query
+   * @param {number} page - Page number
+   * @param {number} limit - Items per page
+   * @returns {Promise<Object>} - Paginated search results with type indicators
+   */
+  searchRestaurants: async (query, page = 1, limit = 10) => {
+    try {
+      const response = await apiClient.get('/restaurants/search', {
+        params: { q: query, page, limit }
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to search restaurants');
+    }
+  },
+
+  /**
    * Create a new restaurant (admin only)
    * @param {Object} restaurantData - Restaurant details
    * @returns {Promise<Object>} - Created restaurant

@@ -2,23 +2,38 @@
 import { ChevronLeft } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { incrementItem, decrementItem, clearCart } from "../../app/slices/cartSlice";
+import { incrementItem, decrementItem } from "../../app/slices/cartSlice";
 import { useState } from "react";
-import orderService from "../../services/orderService";
-import { toast } from "react-toastify";
-import paymentService from "../../services/paymentService";
+import { useDeliveryQuote } from "./useDeliveryQuote";
+import { useOrderPayment } from "./useOrderPayment";
 
 const CartPage = () => {
   const [orderType, setOrderType] = useState("delivery");
   const [deliveryPartner, setDeliveryPartner] = useState("porter");
   const [instructions, setInstructions] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const cartItems = useSelector((state) => state.cart.items);
   const restaurant = useSelector((state) => state.cart.restaurant);
   const user = useSelector((state) => state.auth.userInfo);
+  const selectedAddress = useSelector((state) => state.address.selectedAddress);
+
+  // Use delivery quote hook
+  const {
+    deliveryCharge,
+    loading: loadingDeliveryCharge,
+    available: deliveryAvailable,
+    error: deliveryError,
+  } = useDeliveryQuote({
+    restaurant,
+    selectedAddress,
+    user,
+    orderType,
+  });
+
+  // Use order payment hook
+  const { isProcessing, processPayment } = useOrderPayment();
 
   const totalMRP = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -26,126 +41,35 @@ const CartPage = () => {
   );
 
   const platformFee = 10;
-  const deliveryCharge = orderType === "delivery" ? 40 : 0;
   const gst = Math.round(0.05 * totalMRP);
-  const totalPay = totalMRP + platformFee + deliveryCharge + gst;
+  const totalPay = totalMRP + platformFee + (orderType === "delivery" ? deliveryCharge : 0) + gst;
   const maxEta =
     cartItems.length > 0
       ? Math.max(
           ...cartItems.map(
-            (item) => parseInt(item.eta?.replace(/\D/g, ""), 10) || 0
+            (item) => item.preparation_time || 0
           )
         )
       : 0;
 
   const handleBack = () => navigate(-1);
 
-  const handlePayment = async () => {
-    if (isProcessing) return;
-
-    if (!user) {
-      toast.error("Please login to continue");
-      navigate("/login");
-      return;
-    }
-
-    setIsProcessing(true);
-    try {
-      // Step 1: Create payment session with Cashfree
-      const orderId = `order_${Date.now()}`;
-      const paymentData = {
-        restaurant_id: restaurant?.id,
-        order_amount: totalPay,
-        order_currency: "INR",
-        order_id: orderId,
-        customer_details: {
-          customer_id: String(user.id || user.user_id),
-          customer_phone: user.phone || "9999999999"
-        },
-        order_meta: {
-          return_url: `${window.location.origin}/order-tracking/${orderId}?payment=success`
-        }
-      };
-
-      console.log("💳 Creating payment session:", JSON.stringify(paymentData, null, 2));
-
-      const paymentResponse = await paymentService.createPaymentOrder(paymentData);
-
-      console.log("✅ Payment response:", JSON.stringify(paymentResponse, null, 2));
-
-      if (!paymentResponse.success) {
-        throw new Error(paymentResponse.message || "Failed to create payment session");
-      }
-
-      // Extract payment session ID
-      const paymentSessionId = paymentResponse.data?.payment_session_id;
-      console.log("🔑 Payment Session ID:", paymentSessionId);
-
-      if (!paymentSessionId) {
-        throw new Error("Payment session ID not found in response");
-      }
-
-      // Step 2: Prepare order data for after payment
-      const orderData = {
-        restaurant_id: restaurant?.id,
-        total_amount: totalMRP,
-        tax_amount: gst,
-        discount_amount: 0,
-        payment_method: "ONLINE",
-        payment_status_id: 2, // Pending payment
-        order_status_id: 1, // Pending/Confirmed
-        delivery_type: orderType,
-        delivery_partner: orderType === "delivery" ? deliveryPartner : null,
-        special_instructions: instructions || null,
-        items: cartItems.map((item) => ({
-          menu_item_id: item.id,
-          name: item.name,
-          image: item.featured_image_url || item.image_url,
-          quantity: item.quantity,
-          price: parseFloat(item.price),
-        })),
-      };
-
-      // Store order data in session storage for after payment
-      sessionStorage.setItem('pendingOrder', JSON.stringify(orderData));
-      sessionStorage.setItem('paymentSessionId', paymentSessionId);
-
-      // Navigate to checkout page
-      navigate('/checkout');
-
-      // Step 3: Initiate Cashfree payment
-      await paymentService.initiateCashfreePayment(
-        paymentResponse.data,
-        // Success callback
-        async (paymentDetails) => {
-          console.log("✅ Payment successful:", paymentDetails);
-          
-          try {
-            // Create order after successful payment
-            const orderResponse = await orderService.createOrder(orderData);
-            dispatch(clearCart());
-            toast.success("Payment successful!");
-            navigate("/payment-success", {
-              state: { orderDetails: orderResponse.data || orderResponse }
-            });
-          } catch (error) {
-            console.error("Error creating order after payment:", error);
-            toast.error("Payment successful but order creation failed. Please contact support.");
-          }
-        },
-        // Failure callback
-        (error) => {
-          console.error("❌ Payment failed:", error);
-          toast.error("Payment failed. Please try again.");
-        }
-      );
-
-    } catch (error) {
-      console.error("❌ Error in payment flow:", error);
-      toast.error(error.message || "Failed to process payment. Please try again.");
-    } finally {
-      setIsProcessing(false);
-    }
+  const handlePayment = () => {
+    processPayment({
+      user,
+      restaurant,
+      cartItems,
+      amounts: {
+        totalMRP,
+        gst,
+        platformFee,
+        deliveryCharge,
+        totalPay,
+      },
+      orderType,
+      deliveryPartner,
+      instructions,
+    });
   };
 
   if (cartItems.length === 0) {
@@ -333,11 +257,21 @@ const CartPage = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-gray-900">₹40</p>
+                    <p className="font-bold text-gray-900">
+                      {loadingDeliveryCharge ? "..." : deliveryAvailable ? `₹${deliveryCharge}` : "N/A"}
+                    </p>
                     <p className="text-xs text-gray-500">Delivery charge</p>
                   </div>
                 </div>
               </div>
+              
+              {/* Delivery Error Message */}
+              {!deliveryAvailable && deliveryError && (
+                <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl">
+                  <p className="text-sm text-red-700 font-medium">⚠️ {deliveryError}</p>
+                  <p className="text-xs text-red-600 mt-1">Please select "Eat Right Now" option or try a different address.</p>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -359,7 +293,7 @@ const CartPage = () => {
         {orderType === "delivery" && (
           <div className="flex justify-between">
             <span>Delivery Charge</span>
-            <span>₹{deliveryCharge}</span>
+            <span>{loadingDeliveryCharge ? "Calculating..." : `₹${deliveryCharge}`}</span>
           </div>
         )}
         <div className="flex justify-between">
@@ -408,10 +342,19 @@ const CartPage = () => {
         </div>
         <button
           onClick={handlePayment}
-          disabled={isProcessing}
+          disabled={
+            isProcessing || 
+            (orderType === "delivery" && (loadingDeliveryCharge || !deliveryAvailable))
+          }
           className="bg-green-600 text-white px-5 py-2 rounded-xl font-medium hover:bg-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isProcessing ? "Processing..." : "Make Payment"}
+          {isProcessing 
+            ? "Processing..." 
+            : orderType === "delivery" && loadingDeliveryCharge 
+            ? "Checking Delivery..." 
+            : orderType === "delivery" && !deliveryAvailable 
+            ? "Delivery Unavailable" 
+            : "Make Payment"}
         </button>
       </div>
     </div>

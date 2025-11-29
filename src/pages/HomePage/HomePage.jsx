@@ -1,15 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import featureCards from "../../data/featureCards";
-import FeatureCard from "../../components/FeatureCard/FeatureCard";
+import { useState, useEffect, useRef } from "react";
 import RestaurantCard from "../../components/RestaurantCard/RestaurantCard";
-import SearchBar from "../../components/SearchBar/SearchBar";
 import RestaurantGridCard from "../../components/ResaurantGridCard/RestaurantGridCard";
 import restaurantService from "../../services/restaurantService";
 
 const Home = () => {
-  const [location, setLocation] = useState("");
-  const [search, setSearch] = useState("");
-  const [region, setRegion] = useState("");
   
   // Carousel restaurants state
   const [carouselRestaurants, setCarouselRestaurants] = useState([]);
@@ -147,44 +141,9 @@ const Home = () => {
     };
   }, [gridHasMore, gridLoading, gridPage]);
 
-  // Filter restaurants based on search
-  const filteredCarouselRestaurants = carouselRestaurants.filter(
-    (res) =>
-      (location ? res.pincode === location : true) &&
-      res.name.toLowerCase().includes(search.toLowerCase())
-  );
-  
-  const filteredGridRestaurants = gridRestaurants.filter(
-    (res) =>
-      (location ? res.pincode === location : true) &&
-      res.name.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
     <div className="bg-gradient-to-br from-white to-orange-50 min-h-screen text-black">
       <div className="max-w-7xl mx-auto px-4 space-y-10 py-10">
-        {/* Search + Location */}
-        <SearchBar
-          location={location}
-          setLocation={setLocation}
-          region={region}
-          setRegion={setRegion}
-          search={search}
-          setSearch={setSearch}
-        />
-
-        {/* Features */}
-        {/* <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {featureCards.map((card, index) => (
-            <FeatureCard
-              key={index}
-              title={card.title}
-              description={card.description}
-              Icon={card.icon}
-            />
-          ))}
-        </section> */}
-
         {/* Featured Restaurants Carousel */}
         <section>
           <h3 className="text-xl font-semibold text-gray-800 mb-4">
@@ -196,7 +155,7 @@ const Home = () => {
               className="overflow-x-auto scrollbar-hide"
             >
               <div className="flex gap-5 snap-x snap-mandatory scroll-smooth p-2">
-                {filteredCarouselRestaurants.map((res) => (
+                {carouselRestaurants.map((res) => (
                   <RestaurantCard key={`carousel-${res.id}`} {...res} image_url={res.image_url} />
                 ))}
                 {/* Carousel end marker for intersection observer */}
@@ -225,7 +184,7 @@ const Home = () => {
           )}
 
           <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4 w-full">
-            {filteredGridRestaurants.map((res) => (
+            {gridRestaurants.map((res) => (
               <RestaurantGridCard key={`grid-${res.id}`} {...res} />
             ))}
           </div>

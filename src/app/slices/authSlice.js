@@ -38,8 +38,9 @@ export const checkAuth = createAsyncThunk('auth/checkAuth', async () => {
   if (token) {
     try {
       // Token is automatically added by the interceptor in createApi
-      const userInfo = await authApi.getProfile();
-      return userInfo;
+      const response = await authApi.getProfile();
+      // Extract user data from response (API returns { message, user })
+      return response.user || response;
     } catch (error) {
       localStorage.removeItem('userToken');
       throw error;

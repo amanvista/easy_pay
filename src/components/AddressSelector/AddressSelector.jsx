@@ -1,110 +1,45 @@
 import { useState, useEffect } from 'react';
-import { MapPin, ChevronDown, Home, Briefcase, Navigation, Plus } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { MapPin, ChevronDown, Home, Briefcase, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { setAddresses, selectAddress } from '../../app/slices/addressSlice';
 
 /**
  * AddressSelector component - Cool address selector with icon design for Header
  */
 const AddressSelector = () => {
-  const [selectedAddress, setSelectedAddress] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
+  // Get addresses from Redux
+  const savedAddresses = useSelector((state) => state.address.addresses);
+  const selectedAddress = useSelector((state) => state.address.selectedAddress);
 
-  // Mock saved addresses - in real app, this would come from Redux or API
-  // This should match the addresses from AddAddressPage
-  const [savedAddresses, setSavedAddresses] = useState([
-    {
-      id: 1,
-      label: 'Home',
-      addressLine: 'H-22, Sector 56',
-      city: 'Gurgaon',
-      pincode: '122011',
-    },
-    {
-      id: 2,
-      label: 'Work',
-      addressLine: 'Plot 8, Cyber Hub',
-      city: 'Gurgaon',
-      pincode: '122009',
-    },
-  ]);
-
-  // Load selected address from localStorage and sync addresses
+  // Load addresses from localStorage on mount (sync with Redux)
   useEffect(() => {
-    // Try to get addresses from localStorage (synced from AddAddressPage)
     const storedAddresses = localStorage.getItem('savedAddresses');
     if (storedAddresses) {
       try {
         const parsed = JSON.parse(storedAddresses);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setSavedAddresses(parsed);
+          dispatch(setAddresses(parsed));
         }
       } catch (e) {
         console.log('Error parsing stored addresses');
       }
     }
+  }, [dispatch]);
 
-    const saved = localStorage.getItem('selectedAddress');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setSelectedAddress(parsed);
-      } catch (e) {
-        console.log('Error parsing selected address');
-      }
-    }
-  }, []);
-
-  // Sync selected address when savedAddresses changes
+  // Listen for address updates from other components
   useEffect(() => {
-    if (savedAddresses.length > 0 && !selectedAddress) {
-      // Default to first address if none selected
-      setSelectedAddress(savedAddresses[0]);
-      localStorage.setItem('selectedAddress', JSON.stringify(savedAddresses[0]));
-    } else if (selectedAddress && savedAddresses.length > 0) {
-      // Check if selected address still exists
-      const exists = savedAddresses.find(addr => addr.id === selectedAddress.id);
-      if (!exists && savedAddresses.length > 0) {
-        // Selected address was deleted, use first available
-        setSelectedAddress(savedAddresses[0]);
-        localStorage.setItem('selectedAddress', JSON.stringify(savedAddresses[0]));
-      }
-    }
-  }, [savedAddresses, selectedAddress]);
-
-  // Listen for address updates (for real-time sync)
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === 'savedAddresses') {
-        try {
-          const updatedAddresses = JSON.parse(e.newValue || '[]');
-          if (Array.isArray(updatedAddresses)) {
-            setSavedAddresses(updatedAddresses);
-          }
-        } catch (error) {
-          console.log('Error parsing updated addresses');
-        }
-      }
-      if (e.key === 'selectedAddress') {
-        try {
-          const updatedSelected = JSON.parse(e.newValue || 'null');
-          if (updatedSelected) {
-            setSelectedAddress(updatedSelected);
-          }
-        } catch (error) {
-          console.log('Error parsing selected address');
-        }
-      }
-    };
-
-    // Custom event for same-tab updates
-    const handleCustomStorage = () => {
+    const handleAddressUpdate = () => {
       const storedAddresses = localStorage.getItem('savedAddresses');
       if (storedAddresses) {
         try {
           const parsed = JSON.parse(storedAddresses);
           if (Array.isArray(parsed)) {
-            setSavedAddresses(parsed);
+            dispatch(setAddresses(parsed));
           }
         } catch (e) {
           console.log('Error parsing stored addresses');
@@ -112,22 +47,15 @@ const AddressSelector = () => {
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('addressUpdated', handleCustomStorage);
-    // Poll for changes (fallback for same-tab updates)
-    const interval = setInterval(handleCustomStorage, 1000);
-
+    window.addEventListener('addressUpdated', handleAddressUpdate);
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('addressUpdated', handleCustomStorage);
-      clearInterval(interval);
+      window.removeEventListener('addressUpdated', handleAddressUpdate);
     };
-  }, []);
+  }, [dispatch]);
 
   // Handle address selection
   const handleSelectAddress = (address) => {
-    setSelectedAddress(address);
-    localStorage.setItem('selectedAddress', JSON.stringify(address));
+    dispatch(selectAddress(address));
     setShowDropdown(false);
   };
 

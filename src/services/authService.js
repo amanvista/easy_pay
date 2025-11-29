@@ -17,6 +17,12 @@ const authService = {
   getProfile: async () => {
     const response = await authApi.get('/profile');
     return response.data;
+  },
+  
+  // Update user profile
+  updateProfile: async (profileData) => {
+    const response = await authApi.put('/profile', profileData);
+    return response.data;
   }
 };
 

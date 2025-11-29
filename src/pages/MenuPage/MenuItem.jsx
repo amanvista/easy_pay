@@ -1,32 +1,72 @@
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, decrementItem } from "../../app/slices/cartSlice";
+import { addToCart, decrementItem, clearCart } from "../../app/slices/cartSlice";
+import RestaurantChangeModal from "../../components/RestaurantChangeModal/RestaurantChangeModal";
 
 const MenuItem = ({ item, restaurantDetails, restaurant }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
+  const cartRestaurant = useSelector((state) => state.cart.restaurant);
   const quantity = cartItems.find((i) => i.id === item.id)?.quantity || 0;
+  
+  const [showModal, setShowModal] = useState(false);
+  const [pendingItem, setPendingItem] = useState(null);
+
+  const currentRestaurantId = restaurantDetails?.id || restaurant.id;
+  const currentRestaurantName = restaurantDetails?.name || restaurant.name;
 
   const handleAddToCart = () => {
-    dispatch(
-      addToCart({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        description: item.description,
-        featured_image_url: item.image_url,
-        is_vegetarian: item.is_vegetarian,
-        preparation_time: item.preparation_time,
-        restaurant: {
-          id: restaurantDetails?.id || restaurant.id,
-          name: restaurantDetails?.name || restaurant.name,
-          address: restaurantDetails?.address || restaurant.address,
-        },
-      })
-    );
+    const itemToAdd = {
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      description: item.description,
+      featured_image_url: item.image_url,
+      is_vegetarian: item.is_vegetarian,
+      preparation_time: item.preparation_time,
+      restaurant: {
+        id: currentRestaurantId,
+        name: currentRestaurantName,
+        address: restaurantDetails?.address || restaurant.address,
+        latitude:restaurantDetails?.latitude,
+        longitude: restaurantDetails?.longitude
+      },
+    };
+
+    // Check if cart has items from a different restaurant
+    if (cartRestaurant && cartRestaurant.id !== currentRestaurantId) {
+      setPendingItem(itemToAdd);
+      setShowModal(true);
+    } else {
+      dispatch(addToCart(itemToAdd));
+    }
+  };
+
+  const handleConfirmReplace = () => {
+    dispatch(clearCart());
+    if (pendingItem) {
+      dispatch(addToCart(pendingItem));
+    }
+    setShowModal(false);
+    setPendingItem(null);
+  };
+
+  const handleCancelReplace = () => {
+    setShowModal(false);
+    setPendingItem(null);
   };
 
   return (
-    <div className="flex flex-col sm:flex-row justify-between gap-4 p-4 rounded-2xl border shadow-sm relative bg-white border-gray-100">
+    <>
+      <RestaurantChangeModal
+        isOpen={showModal}
+        onClose={handleCancelReplace}
+        onConfirm={handleConfirmReplace}
+        currentRestaurantName={cartRestaurant?.name}
+        newRestaurantName={currentRestaurantName}
+      />
+      
+      <div className="flex flex-col sm:flex-row justify-between gap-4 p-4 rounded-2xl border shadow-sm relative bg-white border-gray-100">
       {/* Left Section */}
       <div className="flex-1 space-y-2">
         <div className="flex items-center gap-2">
@@ -92,6 +132,7 @@ const MenuItem = ({ item, restaurantDetails, restaurant }) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

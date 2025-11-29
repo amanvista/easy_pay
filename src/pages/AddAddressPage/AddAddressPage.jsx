@@ -403,13 +403,6 @@ const AddAddressPage = () => {
         </div>
       </div>
 
-      {/* Sticky Footer */}
-      {!showAddForm && selectedAddress && (
-        <StickyFooter
-          selectedAddress={selectedAddress}
-          onDeliver={() => navigate('/order-summary')}
-        />
-      )}
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={deleteDialog.isOpen}

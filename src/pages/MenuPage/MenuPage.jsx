@@ -5,6 +5,7 @@ import RestaurantFooter from "../../components/RestaurantFooter/RestaurantFooter
 import { useSelector } from "react-redux";
 import { useRef, useState, useEffect } from "react";
 import restaurantService from "../../services/restaurantService";
+import { toast } from "react-toastify";
 import MenuPageHeader from "./MenuPageHeader";
 import RestaurantInfo from "./RestaurantInfo";
 import MenuSidebar from "./MenuSidebar";
@@ -20,10 +21,14 @@ const MenuPage = () => {
   const menuRefs = useRef({});
   const observerTarget = useRef(null);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const restaurant = restaurants.data.restaurants.data.find(
     (res) => res.id === Number(id)
   );
+
+  // Get authentication state
+  const isAuthenticated = useSelector((state) => !!state.auth.userToken);
 
   // Fetch restaurant details from API
   useEffect(() => {
@@ -111,8 +116,6 @@ const MenuPage = () => {
     state.cart.items.reduce((total, item) => total + item.quantity, 0)
   );
 
-  const navigate = useNavigate();
-
   const handleBack = () => {
     if (window.history.length > 1) {
       navigate(-1);
@@ -136,6 +139,16 @@ const MenuPage = () => {
     );
   };
 
+  // Handle cart navigation with authentication check
+  const handleViewCart = () => {
+    if (!isAuthenticated) {
+      toast.info("Please login to view your cart");
+      navigate("/login", { state: { from: `/menu/${id}` } });
+      return;
+    }
+    navigate("/cart");
+  };
+
   if (!restaurant) return <div className="p-4">Restaurant not found.</div>;
 
   return (
@@ -145,7 +158,7 @@ const MenuPage = () => {
         restaurant={restaurant}
         cartCount={cartCount}
         onBack={handleBack}
-        onCartClick={() => navigate("/cart")}
+        onCartClick={handleViewCart}
       />
 
       <RestaurantInfo
@@ -168,9 +181,24 @@ const MenuPage = () => {
             restaurantDetails={restaurantDetails}
             restaurant={restaurant}
           />
-        ) : (
-          <MenuItems restaurant={restaurant} />
-        )}
+        ) : !loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="w-32 h-32 mb-6 opacity-50">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gray-400">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="currentColor" opacity="0.3"/>
+                <path d="M7 11h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z" fill="currentColor"/>
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">No Menu Available</h3>
+            <p className="text-gray-600 mb-4">This restaurant hasn't added any menu items yet.</p>
+            <button
+              onClick={handleBack}
+              className="px-6 py-2 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 transition"
+            >
+              Browse Other Restaurants
+            </button>
+          </div>
+        ) : null}
 
         {loading && (
           <div className="text-center py-4">
@@ -183,7 +211,7 @@ const MenuPage = () => {
 
       <CartSummary
         cartCount={cartCount}
-        onViewCart={() => navigate("/cart")}
+        onViewCart={handleViewCart}
       />
 
       <RestaurantFooter
