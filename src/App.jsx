@@ -22,6 +22,7 @@ import AddAddressPage from "./pages/AddAddressPage/AddAddressPage";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import SearchPage from "./pages/SearchPage/SearchPage";
+import TrackRiderPage from "./pages/TrackRiderPage/TrackRiderPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AuthInitializer from "./components/AuthInitializer/AuthInitializer";
 import {
@@ -102,6 +103,14 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <OrderStatusPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/track-rider/:orderId?"
+                element={
+                  <ProtectedRoute>
+                    <TrackRiderPage />
                   </ProtectedRoute>
                 }
               />
