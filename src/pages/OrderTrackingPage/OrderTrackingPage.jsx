@@ -40,7 +40,12 @@ const OrderTrackingPage = () => {
       }
 
       try {
-        const response = await orderService.getOrderById(orderId);
+        // Check if orderId is a numeric ID or an order code
+        const isOrderCode = isNaN(orderId);
+        
+        const response = isOrderCode 
+          ? await orderService.getOrderByCode(orderId)
+          : await orderService.getOrderById(orderId);
         
         if (response.success && response.data) {
           const order = response.data;

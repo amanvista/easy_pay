@@ -76,6 +76,20 @@ const orderService = {
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to cancel order');
     }
+  },
+
+  /**
+   * Get order by order code (public - no auth required)
+   * @param {string} orderCode - The order code
+   * @returns {Promise<Object>} - Order details
+   */
+  getOrderByCode: async (orderCode) => {
+    try {
+      const response = await orderApi.get(`/orders/code/${orderCode}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch order');
+    }
   }
 };
 

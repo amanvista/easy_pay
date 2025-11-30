@@ -56,7 +56,7 @@ export const useOrderPayment = () => {
         payment_method: "ONLINE",
         payment_status_id: 2, // Pending payment
         order_status_id: 1, // Pending/Confirmed
-        delivery_type: orderType,
+        order_type: orderType,
         delivery_partner: orderType === "delivery" ? deliveryPartner : null,
         special_instructions: instructions || null,
         items: cartItems.map((item) => ({

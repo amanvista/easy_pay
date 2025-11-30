@@ -48,6 +48,8 @@ const App = () => {
               <Route index element={<Home />} />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/menu/:id" element={<MenuPage />} />
+              {/* Order tracking by code - public route */}
+              <Route path="/order-tracking/:orderId" element={<OrderTrackingPage />} />
               
               {/* Protected Routes - Authentication required */}
               <Route
@@ -87,14 +89,6 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <PaymentTestPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/order-tracking/:orderId"
-                element={
-                  <ProtectedRoute>
-                    <OrderTrackingPage />
                   </ProtectedRoute>
                 }
               />
