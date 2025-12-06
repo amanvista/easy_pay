@@ -27,6 +27,17 @@ const paymentService = {
       );
     }
   },
+  getOrderDetails: async (order_id) => {
+    try {
+      const response = await api.get(`/cashfree/order/${order_id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching payment details:', error);
+      throw new Error(
+        error.response?.data?.message || 'Failed to fetch payment details'
+      );
+    }
+  },
 
   getOrderPayments: async (orderId) => {
     try {

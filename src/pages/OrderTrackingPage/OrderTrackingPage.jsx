@@ -12,6 +12,7 @@ import OrderDeliveredModal from '../../components/OrderDeliveredModal/OrderDeliv
 import ConfirmPickupModal from '../../components/ConfirmPickupModal/ConfirmPickupModal';
 import orderService from '../../services/orderService';
 import deliveryService from '../../services/deliveryService';
+import paymentService from '../../services/paymentService';
 
 // Order status constants
 const ORDER_STATUS = {
@@ -67,6 +68,7 @@ const OrderTrackingPage = () => {
   const [showConfirmPickupModal, setShowConfirmPickupModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [confirmingPickup, setConfirmingPickup] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const hasShownModalRef = useRef(false);
   const deliveryCreationAttempted = useRef(false);
   
@@ -212,6 +214,7 @@ const OrderTrackingPage = () => {
             id: order.order_code || order.id,
             restaurantId: order.restaurant_id,
             orderType: orderType,
+            paymentStatusId: order.payment_status_id || 1,
             items: (order.orderItems || order.order_items)?.map(item => ({
               name: item.name,
               qty: item.quantity,
@@ -372,6 +375,63 @@ const OrderTrackingPage = () => {
     }
   };
 
+  const handleRetryPayment = async () => {
+    if (!orderData || !userInfo) return;
+
+    setIsProcessingPayment(true);
+    try {
+      console.log('💳 Retrying payment for order:', orderData.id);
+
+      // Create payment session for existing order
+      const paymentData = {
+        restaurant_id: orderData.restaurantId,
+        order_id: orderData.id,
+        order_amount: orderData.total,
+        order_currency: "INR",
+        customer_details: {
+          customer_id: String(userInfo.id || userInfo.user_id),
+          customer_phone: userInfo.phone || "9999999999",
+        },
+        order_meta: {
+          return_url: `${window.location.origin}/order-tracking/${orderData.id_row}?payment=success`,
+        },
+      };
+
+      console.log("💳 Creating payment session:", JSON.stringify(paymentData, null, 2));
+      const paymentResponse = await paymentService.getOrderDetails(orderData.id);
+
+      if (!paymentResponse.success) {
+        throw new Error(paymentResponse.message || "Failed to create payment session");
+      }
+
+      const paymentSessionId = paymentResponse.data?.payment_session_id;
+      if (!paymentSessionId) {
+        throw new Error("Payment session ID not found in response");
+      }
+
+      // Initiate Cashfree payment
+      await paymentService.initiateCashfreePayment(
+        paymentResponse.data,
+        // Success callback
+        async (paymentDetails) => {
+          console.log("✅ Payment successful:", paymentDetails);
+          toast.success("Payment successful!");
+          window.location.reload();
+        },
+        // Failure callback
+        (error) => {
+          console.error("❌ Payment failed:", error);
+          toast.error("Payment failed. Please try again.");
+          setIsProcessingPayment(false);
+        }
+      );
+    } catch (error) {
+      console.error("❌ Error in payment retry:", error);
+      toast.error(error.message || "Failed to process payment. Please try again.");
+      setIsProcessingPayment(false);
+    }
+  };
+
   if (loading || !orderData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
@@ -439,20 +499,95 @@ const OrderTrackingPage = () => {
           </motion.div>
         )}
 
-        {/* Order Header */}
-        <OrderHeader orderData={orderData} />
+        {/* Payment Pending - Show Retry Payment Option */}
+        {orderData.paymentStatusId === 1 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-2xl p-8 shadow-xl"
+          >
+            <div className="text-center">
+              <div className="w-20 h-20 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-4xl">⏳</span>
+              </div>
+              
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                Payment Pending
+              </h2>
+              
+              <p className="text-gray-700 mb-2">
+                Your order <span className="font-semibold">#{orderData.id}</span> has been created
+              </p>
+              <p className="text-gray-600 mb-6">
+                Please complete the payment to confirm your order
+              </p>
 
-        {/* Order Timeline */}
-        <OrderTimeline 
-          stages={orderData.stages} 
-          currentStage={orderData.currentStage} 
-        />
+              {/* Order Summary */}
+              <div className="bg-white rounded-xl p-6 mb-6 shadow-sm">
+                <h3 className="font-semibold text-gray-900 mb-4 text-left">Order Summary</h3>
+                <div className="space-y-3">
+                  {orderData.items.slice(0, 3).map((item, idx) => (
+                    <div key={idx} className="flex justify-between text-sm">
+                      <span className="text-gray-700">{item.qty}x {item.name}</span>
+                      <span className="font-medium text-gray-900">₹{(item.price * item.qty).toFixed(2)}</span>
+                    </div>
+                  ))}
+                  {orderData.items.length > 3 && (
+                    <p className="text-sm text-gray-500 text-left">
+                      +{orderData.items.length - 3} more items
+                    </p>
+                  )}
+                  <div className="border-t pt-3 flex justify-between font-bold text-lg">
+                    <span>Total Amount</span>
+                    <span className="text-green-600">₹{orderData.total.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
 
-        {/* Delivery Info */}
-        {orderData.orderType === 'DELIVERY' && <DeliveryInfoCard 
-          orderData={orderData} 
-          showPartner={orderData.currentStage >= ORDER_STATUS.DELIVERY_ASSIGNED} 
-        />}
+              {/* Retry Payment Button */}
+              <button
+                onClick={handleRetryPayment}
+                disabled={isProcessingPayment}
+                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-xl font-semibold text-lg hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg"
+              >
+                {isProcessingPayment ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    Complete Payment - ₹{orderData.total.toFixed(2)}
+                  </>
+                )}
+              </button>
+
+              <p className="text-xs text-gray-500 mt-4">
+                🔒 Secure payment powered by Cashfree
+              </p>
+            </div>
+          </motion.div>
+        ) : (
+          <>
+            {/* Order Header */}
+            <OrderHeader orderData={orderData} />
+
+            {/* Order Timeline */}
+            <OrderTimeline 
+              stages={orderData.stages} 
+              currentStage={orderData.currentStage} 
+            />
+
+            {/* Delivery Info */}
+            {orderData.orderType === 'DELIVERY' && <DeliveryInfoCard 
+              orderData={orderData} 
+              showPartner={orderData.currentStage >= ORDER_STATUS.DELIVERY_ASSIGNED} 
+            />}
+          </>
+        )}
 
         {/* Confirm Pickup Button for PICKUP orders when READY */}
         {orderData.orderType === 'PICKUP' && orderData.currentStage === ORDER_STATUS.READY && (
