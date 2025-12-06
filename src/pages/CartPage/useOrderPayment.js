@@ -15,17 +15,6 @@ export const useOrderPayment = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  /**
-   * Process order and payment
-   * @param {Object} params - Payment parameters
-   * @param {Object} params.user - User object
-   * @param {Object} params.restaurant - Restaurant object
-   * @param {Array} params.cartItems - Cart items array
-   * @param {Object} params.amounts - Amount breakdown (totalMRP, gst, platformFee, deliveryCharge, totalPay)
-   * @param {string} params.orderType - Order type (delivery/takeaway)
-   * @param {string} params.deliveryPartner - Delivery partner name
-   * @param {string} params.instructions - Special instructions
-   */
   const processPayment = async ({
     user,
     restaurant,
@@ -54,7 +43,6 @@ export const useOrderPayment = () => {
         delivery_charge: orderType === "delivery" ? amounts.deliveryCharge : 0,
         platform_fee: amounts.platformFee,
         payment_method: "ONLINE",
-        payment_status_id: 2, // Pending payment
         order_status_id: 1, // Pending/Confirmed
         order_type: orderType,
         delivery_partner: orderType === "delivery" ? deliveryPartner : null,

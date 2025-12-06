@@ -9,6 +9,7 @@ const orderService = {
    */
   createOrder: async (orderData) => {
     try {
+      console.log(orderData)
       const response = await orderApi.post('/orders', orderData);
       return response.data;
     } catch (error) {
@@ -56,7 +57,7 @@ const orderService = {
   updateOrderStatus: async (orderId, statusId) => {
     try {
       const response = await orderApi.patch(`/orders/${orderId}/status`, {
-        order_status_id: statusId
+        status: statusId
       });
       return response.data;
     } catch (error) {

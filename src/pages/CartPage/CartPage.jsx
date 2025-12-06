@@ -205,7 +205,7 @@ const CartPage = () => {
         <div className="flex gap-4 mb-4">
           {[
             { value: "delivery", label: "Delivery" },
-            { value: "takeaway", label: "Eat Right Now" },
+            { value: "pickup", label: "Eat Right Now" },
           ].map((type) => (
             <button
               key={type.value}

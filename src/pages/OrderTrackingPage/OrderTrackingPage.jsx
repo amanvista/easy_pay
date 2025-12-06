@@ -208,6 +208,7 @@ const OrderTrackingPage = () => {
           
           // Map API data to component format
           const mappedOrder = {
+            id_row: order.id,
             id: order.order_code || order.id,
             restaurantId: order.restaurant_id,
             orderType: orderType,
@@ -344,7 +345,8 @@ const OrderTrackingPage = () => {
       console.log('🎯 Confirming pickup for order:', orderId);
       
       // Update order status to PICKED_UP (5)
-      await orderService.updateOrderStatus(orderId, ORDER_STATUS.PICKED_UP);
+      if(orderData?.id_row)
+        await orderService.updateOrderStatus(orderData?.id_row, ORDER_STATUS.PICKED_UP);
       
       console.log('✅ Order marked as picked up');
       toast.success('Order confirmed! Thank you for your purchase!', {
