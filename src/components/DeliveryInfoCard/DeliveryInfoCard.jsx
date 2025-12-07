@@ -1,25 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Star, Truck, User } from 'lucide-react';
+import { MapPin, Phone, Truck, User } from 'lucide-react';
 
 /**
  * DeliveryInfoCard - Delivery address and partner information
  */
-const DeliveryInfoCard = ({ orderData, showPartner = false }) => {
-  const [selectedAddress, setSelectedAddress] = useState(null);
-
-  // Load selected address from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('selectedAddress');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setSelectedAddress(parsed);
-      } catch (e) {
-        console.log('Error parsing selected address');
-      }
+const DeliveryInfoCard = ({ orderData, showPartner = false, existingDeliveryData }) => {
+  console.log(existingDeliveryData,"00000")
+  // Get selected address from localStorage on component mount
+  const getSelectedAddress = () => {
+    try {
+      const saved = localStorage.getItem('selectedAddress');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      console.log('Error parsing selected address');
+      return null;
     }
-  }, []);
+  };
+
+  const [selectedAddress] = useState(getSelectedAddress());
 
   const handleTrackPartner = () => {
     // Mock tracking functionality
@@ -100,7 +99,7 @@ const DeliveryInfoCard = ({ orderData, showPartner = false }) => {
       </motion.div>
 
       {/* Delivery Partner Info */}
-      {showPartner && orderData.partner && (
+      {showPartner && existingDeliveryData?.partner_info && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -111,7 +110,12 @@ const DeliveryInfoCard = ({ orderData, showPartner = false }) => {
             <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
               <Truck className="w-5 h-5 text-green-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">Delivery Partner</h3>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-gray-900">Delivery Partner</h3>
+              <span className="text-xs text-gray-500 font-medium capitalize">
+                {existingDeliveryData?.partner_info?.name}
+              </span>
+            </div>
           </div>
           
           <div className="space-y-4">
@@ -120,11 +124,12 @@ const DeliveryInfoCard = ({ orderData, showPartner = false }) => {
                 <User className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="font-semibold text-gray-900">{orderData.partner.name}</p>
-                <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                  <span className="text-sm text-gray-600">{orderData.partner.rating}</span>
-                </div>
+                <p className="font-semibold text-gray-900">
+                  {existingDeliveryData?.partner_info.name}
+                </p>
+                <p className="text-xs text-gray-500 capitalize">
+                  {existingDeliveryData?.partner_info.vehicle_type?.toLowerCase().replace('_', ' ')}
+                </p>
               </div>
             </div>
             
@@ -132,17 +137,27 @@ const DeliveryInfoCard = ({ orderData, showPartner = false }) => {
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
                 <a 
-                  href={`tel:${orderData.partner.phone}`}
+                  href={`tel:${existingDeliveryData?.partner_info.mobile?.country_code}${existingDeliveryData?.partner_info.mobile?.mobile_number}`}
                   className="text-green-600 hover:text-green-700 font-medium"
                 >
-                  {orderData.partner.phone}
+                  {existingDeliveryData?.partner_info.mobile?.country_code} {existingDeliveryData?.partner_info.mobile?.mobile_number}
                 </a>
               </div>
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4" />
-                <span>{orderData.partner.vehicle}</span>
+                <span className="font-medium">{existingDeliveryData?.partner_info.vehicle_number}</span>
               </div>
             </div>
+
+            {/* {existingDeliveryData?.fare_details?.actual_fare_details && (
+              <div className="pt-3 border-t border-gray-100">
+                <p className="text-sm text-gray-600">
+                  Delivery Fare: <span className="font-semibold text-gray-900">
+                    ₹{(existingDeliveryData?.fare_details.actual_fare_details.minor_amount).toFixed(0)}
+                  </span>
+                </p>
+              </div>
+            )} */}
             
             <motion.button
               whileHover={{ scale: 1.02 }}

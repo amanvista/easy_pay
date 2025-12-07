@@ -69,6 +69,7 @@ const OrderTrackingPage = () => {
   const [loading, setLoading] = useState(true);
   const [confirmingPickup, setConfirmingPickup] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [existingDeliveryData, setExistingDeliveryData] = useState({});
   const hasShownModalRef = useRef(false);
   const deliveryCreationAttempted = useRef(false);
   
@@ -89,7 +90,7 @@ const OrderTrackingPage = () => {
     }
 
     deliveryCreationAttempted.current = true;
-
+    let existingDelivery = ''
     try {
       console.log('\n🚚 Checking if delivery order needs to be created...');
       console.log('Order ID:', order.id);
@@ -97,15 +98,19 @@ const OrderTrackingPage = () => {
 
       // Check if delivery order already exists
       try {
-        const existingDelivery = await deliveryService.getDeliveryOrderByOrderId(order.id);
+        existingDelivery = await deliveryService.getDeliveryOrderByOrderId(order.id);
         if (existingDelivery.success) {
           console.log('✅ Delivery order already exists:', existingDelivery.data);
+          const res = await deliveryService.getPorterOrder(existingDelivery.data?.partner_order_id)
+          setExistingDeliveryData(res?.data)
+          console.log(res)
           return;
         }
       } catch (error) {
         // Delivery order doesn't exist, continue to create
-        console.log('📦 No existing delivery order found, creating new one...');
+        console.log(error.message);
       }
+      if(!existingDelivery.success){
 
       // Prepare delivery order payload
       const deliveryPayload = {
@@ -171,18 +176,21 @@ const OrderTrackingPage = () => {
         console.log('Delivery Order ID:', result.data?.id);
         console.log('Porter Order ID:', result.data?.partner_order_id);
         console.log('Tracking URL:', result.data?.tracking_url);
-        toast.success('Delivery partner assigned!');
+        toast.success('Delivery Initiated!');
       } else {
         console.error('❌ Failed to create delivery order:', result.error || result.message);
         toast.error('Failed to assign delivery partner');
       }
 
-    } catch (error) {
-      console.error('❌ Error creating delivery order:', error);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
-      // Don't show error toast to user as this is background operation
     }
+  }
+  catch (error) {
+    console.error('❌ Error creating delivery order:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    // Don't show error toast to user as this is background operation
+  }
+    
   };
 
   // Fetch order data from API and poll for updates
@@ -584,7 +592,8 @@ const OrderTrackingPage = () => {
             {/* Delivery Info */}
             {orderData.orderType === 'DELIVERY' && <DeliveryInfoCard 
               orderData={orderData} 
-              showPartner={orderData.currentStage >= ORDER_STATUS.DELIVERY_ASSIGNED} 
+              existingDeliveryData={existingDeliveryData}
+              showPartner={true} 
             />}
           </>
         )}
