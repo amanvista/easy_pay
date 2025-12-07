@@ -2,12 +2,7 @@
 import { restaurantApi as apiClient } from './createApi';
 
 const restaurantService = {
-  /**
-   * Get featured restaurants (paginated)
-   * @param {number} page - Page number (default: 1)
-   * @param {number} limit - Items per page (default: 10)
-   * @returns {Promise<Object>} - Paginated featured restaurants
-   */
+
   getFeatured: async (page = 1, limit = 10) => {
     try {
       const response = await apiClient.get('/restaurant/featured', {

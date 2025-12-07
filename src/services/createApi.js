@@ -1,5 +1,6 @@
 // src/api/apiClients.js
 import axios from "axios";
+import appConfig from "../config/appConfig";
 
 const createApi = (baseURL) => {
   const client = axios.create({
@@ -42,8 +43,9 @@ const createApi = (baseURL) => {
   return client;
 };
 
-export const authApi = createApi("http://localhost:3003/auth");
-export const addressApi = createApi("http://localhost:3003");
-export const restaurantApi = createApi("http://localhost:3004");
-export const mediaApi = createApi("http://localhost:3002");
-export const orderApi = createApi("http://localhost:3005");
+const {AUTH_URL, ADDRESS_URL, RESTAURANT_URL, MEDIA_URL, ORDER_URL} = appConfig
+export const authApi = createApi(AUTH_URL)
+export const addressApi = createApi(ADDRESS_URL);
+export const restaurantApi = createApi(RESTAURANT_URL);
+export const mediaApi = createApi(MEDIA_URL);
+export const orderApi = createApi(ORDER_URL);
