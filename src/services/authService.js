@@ -23,6 +23,12 @@ const authService = {
   updateProfile: async (profileData) => {
     const response = await authApi.put('/profile', profileData);
     return response.data;
+  },
+  
+  // Login with Google OAuth
+  loginWithGoogle: async (code, redirectUri) => {
+    const response = await authApi.post('/login/google', { code, redirect_uri: redirectUri });
+    return response.data;
   }
 };
 

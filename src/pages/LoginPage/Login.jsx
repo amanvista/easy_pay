@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
+import { FcGoogle } from 'react-icons/fc';
 import { useAuth } from '../../app/hooks/useAuth';
 import { useDispatch } from 'react-redux';
 import { clearError } from '../../app/slices/authSlice';
+import { useGoogleAuth } from './useGoogleAuth';
 
 // ✅ Configurable Constants
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -21,6 +23,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const { isProcessing, initiateGoogleLogin } = useGoogleAuth("/login");
 
   // Clear auth errors when component mounts or when user starts typing
   useEffect(() => {
@@ -123,8 +126,32 @@ const Login = () => {
               </div>
             )}
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
+            {isProcessing ? (
+              <div className="flex flex-col items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mb-4"></div>
+                <p className="text-gray-600">Signing you in...</p>
+              </div>
+            ) : (
+              <>
+                {/* Google Sign-In Button */}
+                <button
+                  onClick={initiateGoogleLogin}
+                  type="button"
+                  className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 rounded-lg py-3 px-4 font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm"
+                >
+                  <FcGoogle className="text-2xl" />
+                  Sign in with Google
+                </button>
+
+                {/* OR Divider */}
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 h-px bg-gray-300"></div>
+                  <span className="text-sm text-gray-500 font-medium">OR</span>
+                  <div className="flex-1 h-px bg-gray-300"></div>
+                </div>
+
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email Input */}
               <div className="space-y-2">
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -216,7 +243,9 @@ const Login = () => {
                   'Sign In'
                 )}
               </button>
-            </form>
+                </form>
+              </>
+            )}
 
             {/* Sign Up Link */}
             <p className="text-center text-sm text-gray-600">

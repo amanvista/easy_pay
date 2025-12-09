@@ -26,9 +26,6 @@ export default function ProfilePage() {
   useEffect(() => {
         const code = searchParams.get("code");
     const scope = searchParams.get("scope");
-    console.log("OAuth Code:", code);
-    console.log("Scope:", scope);
-    alert("hi")
     if (userInfo) {
       setFormData({
         name: userInfo.name || "",
@@ -40,14 +37,31 @@ export default function ProfilePage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    
+    // For phone number, only allow digits and limit to 10
+    if (name === 'phone') {
+      const digitsOnly = value.replace(/\D/g, '');
+      setFormData((prev) => ({
+        ...prev,
+        [name]: digitsOnly.slice(0, 10),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate phone number if provided
+    if (formData.phone && formData.phone.length !== 10) {
+      toast.error("Phone number must be exactly 10 digits");
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -182,14 +196,23 @@ export default function ProfilePage() {
                 </div>
               </label>
               {isEditing ? (
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder="Enter phone number"
-                />
+                <div>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="Enter 10-digit phone number"
+                    maxLength="10"
+                    pattern="[0-9]{10}"
+                  />
+                  {formData.phone && formData.phone.length !== 10 && (
+                    <p className="text-red-500 text-sm mt-1">
+                      Phone number must be exactly 10 digits
+                    </p>
+                  )}
+                </div>
               ) : (
                 <p className="text-gray-900 px-4 py-2 bg-gray-50 rounded-lg">
                   {userInfo?.phone || "Not provided"}
