@@ -4,15 +4,15 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { ChevronLeft } from 'lucide-react';
 import { toast } from 'react-toastify';
-import OrderHeader from '../../components/OrderHeader/OrderHeader';
-import OrderTimeline from '../../components/OrderTimeline/OrderTimeline';
-import DeliveryInfoCard from '../../components/DeliveryInfoCard/DeliveryInfoCard';
+// Import the new progress section
+// Removed individual imports for OrderHeader, OrderTimeline, DeliveryInfoCard
 import StickyActionBar from '../../components/StickyActionBar/StickyActionBar';
 import OrderDeliveredModal from '../../components/OrderDeliveredModal/OrderDeliveredModal';
 import ConfirmPickupModal from '../../components/ConfirmPickupModal/ConfirmPickupModal';
 import orderService from '../../services/orderService';
 import deliveryService from '../../services/deliveryService';
 import paymentService from '../../services/paymentService';
+import OrderProgressSection from './OrderProgressSection';
 
 // Order status constants
 const ORDER_STATUS = {
@@ -31,7 +31,7 @@ const ORDER_STATUS = {
   DELIVERY_FAILED: 13
 };
 
-// Helper function to get stages by order type
+// Helper function to get stages by order type (Remains outside)
 const getStagesByOrderType = (orderType) => {
   const pickupStages = [
     { id: 1, name: "Order Placed", icon: "📝", description: "Your order has been placed successfully" },
@@ -81,11 +81,17 @@ const OrderTrackingPage = () => {
   const selectedAddress = useSelector((state) => state.address.selectedAddress);
   const userInfo = useSelector((state) => state.auth.userInfo);
   const restaurant = useSelector((state) => state.restaurant.currentRestaurant);
-  console.log("current restaurant----", restaurant)
-  // Create delivery order for delivery type orders
+  
+  // Create delivery order for delivery type orders (remains here as it's state-management/side-effect logic)
   const createDeliveryOrderIfNeeded = async (order) => {
     // Only create for delivery orders and only once
     if (order.order_type !== 'DELIVERY' || deliveryCreationAttempted.current) {
+      return;
+    }
+
+    // Only initiate delivery when order status is READY (4)
+    if (order.order_status_id < ORDER_STATUS.READY) {
+      console.log('⏳ Order not ready yet. Current status:', order.order_status_id, 'Required:', ORDER_STATUS.READY);
       return;
     }
 
@@ -95,6 +101,7 @@ const OrderTrackingPage = () => {
       console.log('\n🚚 Checking if delivery order needs to be created...');
       console.log('Order ID:', order.id);
       console.log('Order Type:', order.order_type);
+      console.log('Order Status:', order.order_status_id);
 
       // Check if delivery order already exists
       try {
@@ -250,6 +257,16 @@ const OrderTrackingPage = () => {
             }),
             estimatedDelivery: 'Calculating...'
           };
+
+          // Set delivery info if available from API
+          if (order.delivery_info || order.deliveryInfo) {
+            const deliveryData = order.delivery_info || order.deliveryInfo;
+            setExistingDeliveryData({
+              success: true,
+              data: deliveryData
+            });
+            console.log('📦 Delivery info loaded from API:', deliveryData);
+          }
           
           // Check if order is completed and show modal (only once)
           const completedStatus = orderType === 'PICKUP' 
@@ -263,8 +280,9 @@ const OrderTrackingPage = () => {
           
           setOrderData(mappedOrder);
 
-          // Create delivery order if needed (only on first load)
-          if (!loading) {
+          // Create delivery order if needed
+          // Reset attempt flag if order status changed to allow retry when order becomes ready
+          if (order.order_status_id >= ORDER_STATUS.READY && !deliveryCreationAttempted.current) {
             createDeliveryOrderIfNeeded(order);
           }
         }
@@ -289,7 +307,6 @@ const OrderTrackingPage = () => {
     
     return () => clearInterval(pollInterval);
   }, [orderId, loading, selectedAddress, userInfo, restaurant]);
-
 
 
   // Redirect if no order ID in params
@@ -507,156 +524,19 @@ const OrderTrackingPage = () => {
           </motion.div>
         )}
 
-        {/* Payment Pending - Show Retry Payment Option */}
-        {orderData.paymentStatusId === 1 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-2xl p-8 shadow-xl"
-          >
-            <div className="text-center">
-              <div className="w-20 h-20 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-4xl">⏳</span>
-              </div>
-              
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                Payment Pending
-              </h2>
-              
-              <p className="text-gray-700 mb-2">
-                Your order <span className="font-semibold">#{orderData.id}</span> has been created
-              </p>
-              <p className="text-gray-600 mb-6">
-                Please complete the payment to confirm your order
-              </p>
-
-              {/* Order Summary */}
-              <div className="bg-white rounded-xl p-6 mb-6 shadow-sm">
-                <h3 className="font-semibold text-gray-900 mb-4 text-left">Order Summary</h3>
-                <div className="space-y-3">
-                  {orderData.items.slice(0, 3).map((item, idx) => (
-                    <div key={idx} className="flex justify-between text-sm">
-                      <span className="text-gray-700">{item.qty}x {item.name}</span>
-                      <span className="font-medium text-gray-900">₹{(item.price * item.qty).toFixed(2)}</span>
-                    </div>
-                  ))}
-                  {orderData.items.length > 3 && (
-                    <p className="text-sm text-gray-500 text-left">
-                      +{orderData.items.length - 3} more items
-                    </p>
-                  )}
-                  <div className="border-t pt-3 flex justify-between font-bold text-lg">
-                    <span>Total Amount</span>
-                    <span className="text-green-600">₹{orderData.total.toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Retry Payment Button */}
-              <button
-                onClick={handleRetryPayment}
-                disabled={isProcessingPayment}
-                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-xl font-semibold text-lg hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg"
-              >
-                {isProcessingPayment ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    Complete Payment - ₹{orderData.total.toFixed(2)}
-                  </>
-                )}
-              </button>
-
-              <p className="text-xs text-gray-500 mt-4">
-                🔒 Secure payment powered by Cashfree
-              </p>
-            </div>
-          </motion.div>
-        ) : (
-          <>
-            {/* Order Header */}
-            <OrderHeader orderData={orderData} />
-
-            {/* Order Timeline */}
-            <OrderTimeline 
-              stages={orderData.stages} 
-              currentStage={orderData.currentStage} 
-            />
-
-            {/* Delivery Info */}
-            {orderData.orderType === 'DELIVERY' && <DeliveryInfoCard 
-              orderData={orderData} 
-              existingDeliveryData={existingDeliveryData}
-              showPartner={true} 
-            />}
-          </>
-        )}
-
-        {/* Confirm Pickup Button for PICKUP orders when READY */}
-        {orderData.orderType === 'PICKUP' && orderData.currentStage === ORDER_STATUS.READY && (
-          <div className="max-w-7xl mx-auto px-4 mt-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 shadow-lg"
-            >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl">📦</span>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-900">
-                    Your Order is Ready for Pickup!
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Please collect your order from the restaurant and confirm below
-                  </p>
-                </div>
-              </div>
-              
-              <button
-                onClick={handleConfirmPickupClick}
-                disabled={confirmingPickup}
-                className="w-full bg-green-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                Confirm Pickup - I've Received My Order
-              </button>
-
-              <p className="text-xs text-gray-500 text-center mt-3">
-                ⚠️ Only confirm after you have collected your order from the restaurant
-              </p>
-            </motion.div>
-          </div>
-        )}
+        {/* --- REPLACED WITH OrderProgressSection --- */}
+        <OrderProgressSection
+          orderData={orderData}
+          existingDeliveryData={existingDeliveryData}
+          isProcessingPayment={isProcessingPayment}
+          handleRetryPayment={handleRetryPayment}
+          handleConfirmPickupClick={handleConfirmPickupClick}
+        />
+        {/* --- END REPLACEMENT --- */}
+        
       </div>
 
-      {/* Sticky Action Bar */}
-      <StickyActionBar
-        currentStage={orderData.currentStage}
-        onContactSupport={handleContactSupport}
-        onViewInvoice={handleViewInvoice}
-        onCancelOrder={handleCancelOrder}
-        onRateExperience={handleRateExperience}
-      />
+      
 
       {/* Order Delivered Modal */}
       <OrderDeliveredModal

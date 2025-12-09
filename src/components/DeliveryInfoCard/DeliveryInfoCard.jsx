@@ -6,7 +6,8 @@ import { MapPin, Phone, Truck, User } from 'lucide-react';
  * DeliveryInfoCard - Delivery address and partner information
  */
 const DeliveryInfoCard = ({ orderData, showPartner = false, existingDeliveryData }) => {
-  console.log(existingDeliveryData,"00000")
+
+  console.log(existingDeliveryData,"testetsets")
   // Get selected address from localStorage on component mount
   const getSelectedAddress = () => {
     try {
@@ -99,7 +100,7 @@ const DeliveryInfoCard = ({ orderData, showPartner = false, existingDeliveryData
       </motion.div>
 
       {/* Delivery Partner Info */}
-      {showPartner && existingDeliveryData?.partner_info && (
+      {existingDeliveryData?.data?.partner_info && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -113,7 +114,7 @@ const DeliveryInfoCard = ({ orderData, showPartner = false, existingDeliveryData
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900">Delivery Partner</h3>
               <span className="text-xs text-gray-500 font-medium capitalize">
-                {existingDeliveryData?.partner_info?.name}
+                {existingDeliveryData?.data?.partner_info?.name}
               </span>
             </div>
           </div>
@@ -125,10 +126,10 @@ const DeliveryInfoCard = ({ orderData, showPartner = false, existingDeliveryData
               </div>
               <div>
                 <p className="font-semibold text-gray-900">
-                  {existingDeliveryData?.partner_info.name}
+                  {existingDeliveryData?.data?.partner_info.name}
                 </p>
                 <p className="text-xs text-gray-500 capitalize">
-                  {existingDeliveryData?.partner_info.vehicle_type?.toLowerCase().replace('_', ' ')}
+                  {existingDeliveryData?.data?.partner_info.vehicle_type?.toLowerCase().replace('_', ' ')}
                 </p>
               </div>
             </div>
@@ -137,15 +138,15 @@ const DeliveryInfoCard = ({ orderData, showPartner = false, existingDeliveryData
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
                 <a 
-                  href={`tel:${existingDeliveryData?.partner_info.mobile?.country_code}${existingDeliveryData?.partner_info.mobile?.mobile_number}`}
+                  href={`tel:${existingDeliveryData?.data?.partner_info.mobile?.country_code}${existingDeliveryData?.data?.partner_info.mobile?.mobile_number}`}
                   className="text-green-600 hover:text-green-700 font-medium"
                 >
-                  {existingDeliveryData?.partner_info.mobile?.country_code} {existingDeliveryData?.partner_info.mobile?.mobile_number}
+                  {existingDeliveryData?.data?.partner_info?.mobile?.country_code} {existingDeliveryData?.data?.partner_info.mobile?.mobile_number}
                 </a>
               </div>
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4" />
-                <span className="font-medium">{existingDeliveryData?.partner_info.vehicle_number}</span>
+                <span className="font-medium">{existingDeliveryData?.data?.partner_info.vehicle_number}</span>
               </div>
             </div>
 

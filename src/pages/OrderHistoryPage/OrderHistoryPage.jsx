@@ -19,6 +19,12 @@ const OrderHistoryPage = () => {
     5: { label: "Picked Up", color: "bg-gray-100 text-gray-800" },
     6: { label: "Cancelled", color: "bg-red-100 text-red-800" },
     7: { label: "Rejected", color: "bg-red-100 text-red-800" },
+    8: { label: "Delivery Pending", color: "bg-yellow-100 text-yellow-800" },
+    9: { label: "Partner Assigned", color: "bg-blue-100 text-blue-800" },
+    10: { label: "Partner Arrived", color: "bg-indigo-100 text-indigo-800" },
+    11: { label: "Out for Delivery", color: "bg-purple-100 text-purple-800" },
+    12: { label: "Delivered", color: "bg-green-100 text-green-800" },
+    13: { label: "Delivery Failed", color: "bg-red-100 text-red-800" },
   };
 
   useEffect(() => {

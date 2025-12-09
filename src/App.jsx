@@ -149,6 +149,12 @@ const App = () => {
                 }
               />
               <Route
+                path="/partner/profile"
+                element={
+                    <ProfilePage />
+                }
+              />
+              <Route
                 path="/cart"
                 element={
                   <ProtectedRoute>

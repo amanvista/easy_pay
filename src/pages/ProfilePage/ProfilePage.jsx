@@ -5,8 +5,11 @@ import { useDispatch } from "react-redux";
 import { checkAuth } from "../../app/slices/authSlice";
 import { toast } from "react-toastify";
 import authService from "../../services/authService";
+import { useSearchParams } from "react-router-dom";
 
 export default function ProfilePage() {
+    const [searchParams] = useSearchParams();
+
   const { userInfo: authData } = useAuth();
   const dispatch = useDispatch();
   const [isEditing, setIsEditing] = useState(false);
@@ -21,6 +24,11 @@ export default function ProfilePage() {
   const userInfo = authData?.user || authData;
 
   useEffect(() => {
+        const code = searchParams.get("code");
+    const scope = searchParams.get("scope");
+    console.log("OAuth Code:", code);
+    console.log("Scope:", scope);
+    alert("hi")
     if (userInfo) {
       setFormData({
         name: userInfo.name || "",
