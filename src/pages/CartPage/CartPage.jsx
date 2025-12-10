@@ -1,5 +1,5 @@
 // src/pages/CartPage.jsx
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, MapPin, Plus, Home, Briefcase } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { incrementItem, decrementItem } from "../../app/slices/cartSlice";
@@ -18,6 +18,7 @@ const CartPage = () => {
   const restaurant = useSelector((state) => state.cart.restaurant);
   const user = useSelector((state) => state.auth.userInfo);
   const selectedAddress = useSelector((state) => state.address.selectedAddress);
+  const addresses = useSelector((state) => state.address.addresses);
 
   // Use delivery quote hook
   const {
@@ -55,6 +56,12 @@ const CartPage = () => {
   const handleBack = () => navigate(-1);
 
   const handlePayment = () => {
+    // Check if delivery address is required
+    if (orderType === "delivery" && !selectedAddress) {
+      navigate('/add-address');
+      return;
+    }
+
     processPayment({
       user,
       restaurant,
@@ -70,6 +77,39 @@ const CartPage = () => {
       deliveryPartner,
       instructions,
     });
+  };
+
+  // Get icon based on address label
+  const getAddressIcon = (label) => {
+    switch (label?.toLowerCase()) {
+      case 'home':
+        return <Home className="w-4 h-4 text-blue-600" />;
+      case 'work':
+        return <Briefcase className="w-4 h-4 text-purple-600" />;
+      default:
+        return <MapPin className="w-4 h-4 text-gray-600" />;
+    }
+  };
+
+  // Check if payment should be disabled
+  const isPaymentDisabled = () => {
+    if (isProcessing) return true;
+    if (orderType === "delivery") {
+      if (!selectedAddress) return true;
+      if (loadingDeliveryCharge || !deliveryAvailable) return true;
+    }
+    return false;
+  };
+
+  // Get payment button text
+  const getPaymentButtonText = () => {
+    if (isProcessing) return "Processing...";
+    if (orderType === "delivery") {
+      if (!selectedAddress) return "Add Address First";
+      if (loadingDeliveryCharge) return "Checking Delivery...";
+      if (!deliveryAvailable) return "Delivery Unavailable";
+    }
+    return "Make Payment";
   };
 
   if (cartItems.length === 0) {
@@ -183,6 +223,58 @@ const CartPage = () => {
         ))}
       </div>
 
+      {/* Delivery Address Section */}
+      {orderType === "delivery" && (
+        <div className="mx-4 mt-4 border border-gray-200 rounded-2xl p-4 bg-white shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-orange-500" />
+              Delivery Address
+            </h3>
+            <button
+              onClick={() => navigate('/add-address')}
+              className="text-xs text-orange-500 hover:text-orange-600 font-medium flex items-center gap-1"
+            >
+              <Plus className="w-3 h-3" />
+              {selectedAddress ? 'Change' : 'Add'}
+            </button>
+          </div>
+          
+          {selectedAddress ? (
+            <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+              <div className="mt-0.5">
+                {getAddressIcon(selectedAddress.label)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-medium text-gray-900">{selectedAddress.label}</span>
+                  <span className="px-2 py-0.5 text-xs font-medium text-green-600 bg-green-100 rounded-full">
+                    Selected
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600">
+                  {selectedAddress.addressLine}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {selectedAddress.city}, {selectedAddress.state} - {selectedAddress.pincode}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 border-2 border-dashed border-gray-300 rounded-xl text-center">
+              <MapPin className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-600 mb-2">No delivery address selected</p>
+              <button
+                onClick={() => navigate('/add-address')}
+                className="text-sm font-medium text-orange-500 hover:text-orange-600"
+              >
+                Add Delivery Address
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Restaurant Note */}
       <div className="px-4 mt-4">
         <label className="block text-sm text-gray-600 mb-1">
@@ -265,8 +357,16 @@ const CartPage = () => {
                 </div>
               </div>
               
+              {/* Address Required Message */}
+              {!selectedAddress && (
+                <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-xl">
+                  <p className="text-sm text-orange-700 font-medium">📍 Delivery address required</p>
+                  <p className="text-xs text-orange-600 mt-1">Please add a delivery address to continue with delivery option.</p>
+                </div>
+              )}
+              
               {/* Delivery Error Message */}
-              {!deliveryAvailable && deliveryError && (
+              {selectedAddress && !deliveryAvailable && deliveryError && (
                 <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl">
                   <p className="text-sm text-red-700 font-medium">⚠️ {deliveryError}</p>
                   <p className="text-xs text-red-600 mt-1">Please select "Eat Right Now" option or try a different address.</p>
@@ -342,19 +442,14 @@ const CartPage = () => {
         </div>
         <button
           onClick={handlePayment}
-          disabled={
-            isProcessing || 
-            (orderType === "delivery" && (loadingDeliveryCharge || !deliveryAvailable))
-          }
-          className="bg-green-600 text-white px-5 py-2 rounded-xl font-medium hover:bg-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isPaymentDisabled()}
+          className={`px-5 py-2 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+            orderType === "delivery" && !selectedAddress
+              ? "bg-orange-500 text-white hover:bg-orange-600"
+              : "bg-green-600 text-white hover:bg-green-700"
+          }`}
         >
-          {isProcessing 
-            ? "Processing..." 
-            : orderType === "delivery" && loadingDeliveryCharge 
-            ? "Checking Delivery..." 
-            : orderType === "delivery" && !deliveryAvailable 
-            ? "Delivery Unavailable" 
-            : "Make Payment"}
+          {getPaymentButtonText()}
         </button>
       </div>
     </div>

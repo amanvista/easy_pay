@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { logoutUser } from "./authSlice";
 
 // Load addresses from localStorage
 const loadFromLocalStorage = () => {
@@ -94,6 +95,14 @@ const addressSlice = createSlice({
       state.selectedAddress = null;
       saveToLocalStorage(state);
     },
+  },
+  extraReducers: (builder) => {
+    // Clear addresses when user logs out
+    builder.addCase(logoutUser.fulfilled, (state) => {
+      state.addresses = [];
+      state.selectedAddress = null;
+      // No need to call saveToLocalStorage here as logout already clears localStorage
+    });
   },
 });
 

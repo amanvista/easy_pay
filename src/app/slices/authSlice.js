@@ -28,8 +28,19 @@ export const loginUser = createAsyncThunk(
 
 // Async thunk for logout
 export const logoutUser = createAsyncThunk('auth/logout', async () => {
+  // Clear auth tokens
   localStorage.removeItem('token');
   localStorage.removeItem('userToken');
+  
+  // Clear address data
+  localStorage.removeItem('savedAddresses');
+  localStorage.removeItem('selectedAddress');
+  
+  // Clear any other user-specific data
+  localStorage.removeItem('user');
+  
+  // Dispatch address update event for cross-component sync
+  window.dispatchEvent(new Event('addressUpdated'));
 });
 
 // Async thunk for checking authentication status using authApi
