@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { restaurantConfig } from '../../data/restaurantConfig';
+import { logoutUser } from './authSlice';
 
 const initialState = {
   currentTheme: localStorage.getItem('restaurantTheme') || restaurantConfig.defaultTheme
@@ -13,7 +14,14 @@ const themeSlice = createSlice({
       state.currentTheme = action.payload;
       localStorage.setItem('restaurantTheme', action.payload);
     }
-  }
+  },
+  extraReducers: (builder) => {
+    // Reset theme to default when user logs out
+    builder.addCase(logoutUser.fulfilled, (state) => {
+      state.currentTheme = restaurantConfig.defaultTheme;
+      // No need to save to localStorage here as logout already clears it
+    });
+  },
 });
 
 export const { setTheme } = themeSlice.actions;

@@ -36,8 +36,35 @@ export const logoutUser = createAsyncThunk('auth/logout', async () => {
   localStorage.removeItem('savedAddresses');
   localStorage.removeItem('selectedAddress');
   
+  // Clear cart data
+  localStorage.removeItem('cart');
+  
+  // Clear theme data (user-specific theme preferences)
+  localStorage.removeItem('restaurantTheme');
+  
   // Clear any other user-specific data
   localStorage.removeItem('user');
+  
+  // Clear all localStorage items that might contain user data
+  // This is a more comprehensive approach to ensure no user data remains
+  const keysToRemove = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    // Remove any keys that might contain user-specific data
+    if (key && (
+      key.includes('user') || 
+      key.includes('auth') || 
+      key.includes('address') || 
+      key.includes('cart') ||
+      key.includes('order') ||
+      key.includes('profile')
+    )) {
+      keysToRemove.push(key);
+    }
+  }
+  
+  // Remove the identified keys
+  keysToRemove.forEach(key => localStorage.removeItem(key));
   
   // Dispatch address update event for cross-component sync
   window.dispatchEvent(new Event('addressUpdated'));
@@ -99,6 +126,8 @@ const authSlice = createSlice({
     builder.addCase(logoutUser.fulfilled, (state) => {
       state.userInfo = null;
       state.userToken = null;
+      state.error = null;
+      state.success = false;
     });
 
     // Check auth cases

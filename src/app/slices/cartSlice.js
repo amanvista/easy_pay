@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { logoutUser } from "./authSlice";
 
 // Load cart from localStorage
 const savedCart =
@@ -81,6 +82,15 @@ const cartSlice = createSlice({
       state.meta = { ...state.meta, ...action.payload };
       saveToLocalStorage(state);
     },
+  },
+  extraReducers: (builder) => {
+    // Clear cart when user logs out
+    builder.addCase(logoutUser.fulfilled, (state) => {
+      state.items = [];
+      state.restaurant = null;
+      state.meta = { eta: "30 mins", savings: 0 };
+      // No need to call saveToLocalStorage here as logout already clears localStorage
+    });
   },
 });
 

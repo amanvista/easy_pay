@@ -9,6 +9,7 @@ import { setAddresses, selectAddress } from '../../app/slices/addressSlice';
  */
 const AddressSelector = () => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   
@@ -18,17 +19,46 @@ const AddressSelector = () => {
 
   // Load addresses from localStorage on mount (sync with Redux)
   useEffect(() => {
-    const storedAddresses = localStorage.getItem('savedAddresses');
-    if (storedAddresses) {
-      try {
-        const parsed = JSON.parse(storedAddresses);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          dispatch(setAddresses(parsed));
+    const loadAddresses = async () => {
+      const storedAddresses = localStorage.getItem('savedAddresses');
+      const storedSelectedAddress = localStorage.getItem('selectedAddress');
+      
+      if (storedAddresses) {
+        try {
+          const parsed = JSON.parse(storedAddresses);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            dispatch(setAddresses(parsed));
+            
+            // If no selected address but addresses exist, select the first one
+            if (!storedSelectedAddress && parsed.length > 0) {
+              dispatch(selectAddress(parsed[0]));
+            } else if (storedSelectedAddress) {
+              try {
+                const selectedAddr = JSON.parse(storedSelectedAddress);
+                // Verify the selected address still exists in the addresses array
+                const addressExists = parsed.find(addr => addr.id === selectedAddr.id);
+                if (addressExists) {
+                  dispatch(selectAddress(selectedAddr));
+                } else {
+                  // Selected address no longer exists, select first available
+                  dispatch(selectAddress(parsed[0]));
+                }
+              } catch (e) {
+                // If selected address is corrupted, select first available
+                dispatch(selectAddress(parsed[0]));
+              }
+            }
+          }
+        } catch (e) {
+          console.log('Error parsing stored addresses');
         }
-      } catch (e) {
-        console.log('Error parsing stored addresses');
       }
-    }
+      
+      // Set loading to false after attempting to load
+      setIsLoading(false);
+    };
+
+    loadAddresses();
   }, [dispatch]);
 
   // Listen for address updates from other components
@@ -83,6 +113,18 @@ const AddressSelector = () => {
     }
   };
 
+  // Show loading state while addresses are being loaded
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-2 text-sm text-gray-500">
+        <MapPin className="w-4 h-4 animate-pulse" />
+        <span className="hidden sm:inline">Loading...</span>
+        <span className="sm:hidden">...</span>
+      </div>
+    );
+  }
+
+  // Show "Add Address" if no addresses exist
   if (!selectedAddress || savedAddresses.length === 0) {
     return (
       <button

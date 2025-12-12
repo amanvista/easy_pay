@@ -68,9 +68,9 @@ export default function Header() {
             />
           </Link>
           {/* Address Selector - Cool icon design (Desktop) */}
-          <div className="hidden sm:block border-l border-gray-200 pl-3 sm:pl-4">
+          {isAuthenticated &&  <div className="hidden sm:block border-l border-gray-200 pl-3 sm:pl-4">
             <AddressSelector />
-          </div>
+          </div>}
         </div>
 
         {/* Desktop Nav */}

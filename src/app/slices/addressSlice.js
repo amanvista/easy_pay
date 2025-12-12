@@ -48,6 +48,17 @@ const addressSlice = createSlice({
       if (!state.selectedAddress && action.payload.length > 0) {
         state.selectedAddress = action.payload[0];
       }
+      // If selected address exists but is not in the new addresses array, select first available
+      else if (state.selectedAddress && action.payload.length > 0) {
+        const addressExists = action.payload.find(addr => addr.id === state.selectedAddress.id);
+        if (!addressExists) {
+          state.selectedAddress = action.payload[0];
+        }
+      }
+      // If no addresses, clear selected address
+      else if (action.payload.length === 0) {
+        state.selectedAddress = null;
+      }
       saveToLocalStorage(state);
     },
 
