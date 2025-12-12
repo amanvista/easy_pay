@@ -26,32 +26,26 @@ import {
   ReturnPolicy,
   ShippingPolicy,
 } from "../pages/PoliciesPage";
-import PublicRoute from "../components/PublicRoute";
 
 export const publicNoLayoutRoutes = [
   { 
     path: "/login", 
     element: (
-      <PublicRoute>
         <Login />
-      </PublicRoute>
     )
   },
   { 
     path: "/register", 
     element: (
-      <PublicRoute>
         <Register />
-      </PublicRoute>
     )
   },
 ];
 
 export const publicWithLayoutRoutes = [
-  { index: true, element: <Home /> },
+  { path: "/", element: <Home /> },
   { path: "/search", element: <SearchPage /> },
   { path: "/menu/:id", element: <MenuPage /> },
-  { path: "/order-tracking/:orderId", element: <OrderTrackingPage /> },
 
   // Policy pages
   { path: "/terms", element: <TermsAndConditions /> },
@@ -62,6 +56,7 @@ export const publicWithLayoutRoutes = [
 ];
 
 export const protectedRoutes = [
+  { path: "/order-tracking/:orderId", element: <OrderTrackingPage /> },
   { path: "/cart", element: <CartPage /> },
   { path: "/payment", element: <PaymentPage /> },
   { path: "/payment-success", element: <PaymentSuccess /> },

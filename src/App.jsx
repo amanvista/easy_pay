@@ -8,6 +8,7 @@ import AuthInitializer from "./components/AuthInitializer/AuthInitializer";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
 import { publicNoLayoutRoutes, publicWithLayoutRoutes , protectedRoutes} from "./routes/routesConfig";
+import PublicRoute from "./components/PublicRoute";
 
 const App = () => {
   return (
@@ -27,9 +28,9 @@ const App = () => {
               {/* Public with layout */}
               {publicWithLayoutRoutes.map((r) =>
                 r.index ? (
-                  <Route key="index" index element={r.element} />
+                  <Route key="index" index element={<PublicRoute>{r.element}</PublicRoute>} />
                 ) : (
-                  <Route key={r.path} path={r.path} element={r.element} />
+                  <Route key={r.path} path={r.path} element={<PublicRoute>{r.element}</PublicRoute>} />
                 )
               )}
 
