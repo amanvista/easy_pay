@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { MapPin, ChevronDown, Home, Briefcase, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { setAddresses, selectAddress } from '../../app/slices/addressSlice';
+import { syncAddressesFromApi } from '../../utils/addressSync';
 
 /**
  * AddressSelector component - Cool address selector with icon design for Header
@@ -19,47 +20,60 @@ const AddressSelector = () => {
 
   // Load addresses from localStorage on mount (sync with Redux)
   useEffect(() => {
-    const loadAddresses = async () => {
-      const storedAddresses = localStorage.getItem('savedAddresses');
-      const storedSelectedAddress = localStorage.getItem('selectedAddress');
-      
-      if (storedAddresses) {
-        try {
-          const parsed = JSON.parse(storedAddresses);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            dispatch(setAddresses(parsed));
-            
-            // If no selected address but addresses exist, select the first one
-            if (!storedSelectedAddress && parsed.length > 0) {
-              dispatch(selectAddress(parsed[0]));
-            } else if (storedSelectedAddress) {
-              try {
-                const selectedAddr = JSON.parse(storedSelectedAddress);
-                // Verify the selected address still exists in the addresses array
-                const addressExists = parsed.find(addr => addr.id === selectedAddr.id);
-                if (addressExists) {
-                  dispatch(selectAddress(selectedAddr));
-                } else {
-                  // Selected address no longer exists, select first available
-                  dispatch(selectAddress(parsed[0]));
-                }
-              } catch (e) {
-                // If selected address is corrupted, select first available
-                dispatch(selectAddress(parsed[0]));
-              }
-            }
+    const loadAddresses = () => {
+      try {
+        const storedAddresses = localStorage.getItem("savedAddresses");
+        const storedSelectedAddress = localStorage.getItem("selectedAddress");
+  
+        if (!storedAddresses) return;
+  
+        const parsedAddresses = JSON.parse(storedAddresses);
+        if (!Array.isArray(parsedAddresses) || parsedAddresses.length === 0) return;
+  
+        dispatch(setAddresses(parsedAddresses));
+  
+        let finalSelected = null;
+  
+        if (
+          storedSelectedAddress &&
+          storedSelectedAddress !== "undefined" &&
+          storedSelectedAddress !== "null"
+        ) {
+          try {
+            const parsedSelected = JSON.parse(storedSelectedAddress);
+            finalSelected = parsedAddresses.find(
+              (addr) => addr.id === parsedSelected?.id
+            );
+          } catch {
+            // ignore corrupted selectedAddress
           }
-        } catch (e) {
-          console.log('Error parsing stored addresses');
         }
+  
+        // fallback
+        if (!finalSelected) {
+          finalSelected = parsedAddresses[0];
+        }
+  
+        dispatch(selectAddress(finalSelected));
+      } catch (err) {
+        console.error("Failed to hydrate addresses:", err);
+      } finally {
+        setIsLoading(false);
       }
-      
-      // Set loading to false after attempting to load
-      setIsLoading(false);
     };
-
+  
     loadAddresses();
   }, [dispatch]);
+
+  useEffect(() => {
+    syncAddressesFromApi({
+      dispatch,
+      onLoading: setIsLoading,
+      onError: (err) =>
+        toast.error(err.message || "Failed to load addresses"),
+    });
+  }, []);
+  
 
   // Listen for address updates from other components
   useEffect(() => {
@@ -160,7 +174,7 @@ const AddressSelector = () => {
         <div className="text-left hidden sm:block flex-1 min-w-0">
           <div className="text-xs text-gray-500">Deliver to</div>
           <div className="text-sm font-medium text-gray-900 truncate max-w-[120px] lg:max-w-[180px]">
-            {selectedAddress.label} • {selectedAddress.addressLine.split(',')[0]}
+            {selectedAddress.label} • {selectedAddress.addressLine?.split(',')[0]}
           </div>
         </div>
         

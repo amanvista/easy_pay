@@ -7,66 +7,28 @@ import AddAddressForm from '../../components/AddAddressForm/AddAddressForm';
 import StickyFooter from '../../components/StickyFooter/StickyFooter';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 import addressService from '../../services/addressService';
+import { syncAddressesFromApi } from '../../utils/addressSync';
+import { useDispatch, useSelector } from 'react-redux';
 
 const AddAddressPage = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [savedAddresses, setSavedAddresses] = useState([]);
+  const savedAddresses = useSelector((state) => state.address.addresses);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, addressId: null, addressLabel: '' });
 
-  // Map API address to component format
-  const mapAddressToComponent = (apiAddress) => ({
-    id: apiAddress.id,
-    label: apiAddress.address_label || 'Home',
-    fullName: apiAddress.full_name,
-    phone: apiAddress.phone_number,
-    addressLine: apiAddress.street_building_area,
-    city: apiAddress.city,
-    state: apiAddress.state,
-    pincode: apiAddress.zip_code,
-    landmark: apiAddress.landmark || '',
-    note: apiAddress.delivery_instructions || '',
-    isDefault: apiAddress.is_default,
-    latitude: apiAddress.latitude ? parseFloat(apiAddress.latitude) : null,
-    longitude: apiAddress.longitude ? parseFloat(apiAddress.longitude) : null,
-  });
-
-  // Fetch addresses from API
-  const fetchAddresses = async () => {
-    try {
-      setLoading(true);
-      const addresses = await addressService.getAllAddresses();
-      console.log('API Response addresses:', addresses);
-      const mappedAddresses = addresses.map(mapAddressToComponent);
-      console.log('Mapped addresses:', mappedAddresses);
-      setSavedAddresses(mappedAddresses);
-      
-      // Sync to localStorage for AddressSelector
-      localStorage.setItem('savedAddresses', JSON.stringify(mappedAddresses));
-      
-      // Auto-select default address
-      const defaultAddress = mappedAddresses.find(addr => addr.isDefault);
-      if (defaultAddress) {
-        setSelectedAddressId(defaultAddress.id);
-        localStorage.setItem('selectedAddress', JSON.stringify(defaultAddress));
-      }
-    } catch (error) {
-      console.error('Error fetching addresses:', error);
-      toast.error(error.message || 'Failed to load addresses', {
-        position: 'top-right',
-        autoClose: 3000,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchAddresses();
+    syncAddressesFromApi({
+      dispatch,
+      onLoading: setLoading,
+      onError: (err) =>
+        toast.error(err.message || "Failed to load addresses"),
+    });
   }, []);
 
   // Handle URL parameters for edit mode
