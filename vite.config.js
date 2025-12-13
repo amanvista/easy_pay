@@ -6,7 +6,7 @@ import { resolve } from "path";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: "./", // This is crucial for proper asset loading
+  base: "/", // This is crucial for proper asset loading
   build: {
     outDir: "dist",
     rollupOptions: {
